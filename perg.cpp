@@ -12,7 +12,6 @@
 #include <omp.h>
 #include <string.h>
 
-// Contains the different mode options for perg.
 struct Settings {
 	bool recursive;
 	bool invert;
@@ -22,7 +21,6 @@ struct Settings {
 	int terms;
 };
 
-// Outputs the help texts for perg.
 void helpCheck(char *argv[]) {
 	if (argv[1] == std::string("-h") || argv[1] == std::string("--help") || argv[1] == std::string("-help")) {
 		std::cout << "\nPERG - Parallel Expression Reference Grep by Ryan Chui (2017)\n" << std::endl;
@@ -43,7 +41,7 @@ void helpCheck(char *argv[]) {
 	}
 }
 
-// Gets the settings for perg based on user input.
+// Checks if recurrsive and if the output is inverted.
 Settings getSettings(int argc, char *argv[]) {
 	int term = 1;
 	Settings instance;
@@ -87,9 +85,7 @@ std::string getSearchTerm(Settings instance, char *argv[]) {
 std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std::string term, int base, Settings instance, int *count) {
 	DIR *dir;
     struct dirent *ent;
-	// Ensures that the directory exists
     if ((dir = opendir(cwd)) != NULL) {
-		// Checks taht the file exists.
 	    while((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent->d_name);
 	        std::string fileName = std::string(cwd) + "/" + fileBuff;
@@ -98,19 +94,17 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 				names[*count] = fileName;
            		*count += 1;
 			}
-			// Searches recursively through file directory
 			if ((dir2 = opendir(strdup(fileName.c_str()))) != NULL && fileBuff != "." && fileBuff != ".." && instance.recursive == true) {
 				names = findAll(strdup(fileName.c_str()), names, term, base + 1, instance, count);
 			}
-            if (*count == names.size()) {
-	            names.resize(*count * 2);
-	        }
-	   	}
+			if (*count == names.size()) {
+				names.resize(*count * 2);
+			}
+		}
 	   	closedir (dir);
-	}
-	// Searches and prints in parallel by file.
+	}	
 	if (base == 0) {
-		#pragma omp parallel for schedule(static)
+		#pragma omp parallel for schedule(dynamic)
 		for (int i = 0; i < names.size(); ++i) {
 			if (names[i] != "") {
 	   	 		std::ifstream file(names[i].c_str());
@@ -133,14 +127,13 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 						}
 					}
 					std::cout << stream.str();
-		        }
-		    }
+				}
+			}
 		}
 	}
 	return names;
 }
 
-// Searches and prints results for a single file.
 void printSingle(Settings instance, std::string term, char *cwd) {
 	std::ifstream file1(instance.file.c_str());
 	std::ifstream file2(instance.file.c_str());

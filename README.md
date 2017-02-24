@@ -14,6 +14,8 @@ icc -o perg -openmp perg.cpp
 ###Command Syntax:
 perg [-r|-v|-V|-f \<file>] \<search term>
 
+Due to the nature of implementation the order of syntax is strict and must be adhered to or errors will result. The order flags must always be used in is [-r|-v|-V|-f].
+
 ###Modes:
     -r    Recursive Search.     Recursively searches through the directory and all sub directories for the 
                                 given <search term>. Will not do anything if the [-f <file>] flag is given.

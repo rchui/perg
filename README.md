@@ -12,7 +12,7 @@ icc -o perg -openmp perg.cpp
 
 ##Usage
 ###Command Syntax:
-perg [-r|-v|-V|-f <file>] <search term>
+perg [-r|-v|-V|-f \<file>] \<search term>
 
 ###Modes:
     -r    Recursive Search.     Recursively searches through the directory and all sub directories for the 

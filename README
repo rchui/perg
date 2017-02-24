@@ -1,12 +1,11 @@
-PERG - Parallel Expression Reference Grep
+#PERG - Parallel Expression Reference Grep
 
 Developed by Ryan Chui (2017)
 
 perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files, datasets,
 and directories developed at the National Center for Supercomputing Applications.
 
-Compile perg
-------------
+##Compilation
 
 GNU C Compiler
 g++ -o perg -fopenmp perg.cpp
@@ -14,8 +13,7 @@ g++ -o perg -fopenmp perg.cpp
 Intel C Compiler
 icc -o perg -openmp perg.cpp
 
-Run perg
---------
+##Usage
 
 Due to the nature of implementation the order of syntax is strict and must be adhered to or errors will
 result.

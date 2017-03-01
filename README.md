@@ -12,7 +12,7 @@ The grep command line utility was first introduced in 1974 as a method of search
 
 ##Usage
 ###Command Syntax:
-    perg [-r | -v | -V | -f \<file>] \<search term>
+    perg [-r | -v | -V | -f \<file>] <search term>
 
     Due to the nature of implementation the order of syntax is strict and must be adhered to or errors will result. The order flags must
     always be used in is [-r | -v | -V | -f].
@@ -21,9 +21,9 @@ The grep command line utility was first introduced in 1974 as a method of search
     -r    Recursive Search.     Recursively searches through the directory and all sub directories for the 
                                 given <search term>. Will not do anything if the [-f <file>] flag is given.
 
-    -v    Search Inversion.     Search for every line that does not include the \<search term>.
+    -v    Search Inversion.     Search for every line that does not include the <search term>.
 
     -V    Enable Verbose.       The file path to the file will be printed along with the search result.
 
-    -f    Single File Search.   Signals perg to only search the \<file> for the \<search term>. If -f is not
+    -f    Single File Search.   Signals perg to only search the <file> for the <search term>. If -f is not
                                 used, perg will search the entire directory from where perg is called from.

@@ -16,6 +16,8 @@ The grep command line utility was first introduced in 1974 as a method of search
 
 Due to the nature of implementation the order that flags need to be called in is strict or you'll get errors. The order the flags must always be used in is [-r | -v | -V | -f].
 
+Additionally there is no regex support yet.
+
 ###Modes:
     -r    Recursive Search.     Recursively searches through the directory and all sub directories for the 
                                 given <search term>. Will not do anything if the [-f <file>] flag is given.

@@ -134,6 +134,7 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 	return names;
 }
 
+// Search for term in a single file
 void printSingle(Settings instance, std::string term, char *cwd) {
 	std::ifstream file1(instance.file.c_str());
 	std::ifstream file2(instance.file.c_str());

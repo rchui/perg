@@ -12,6 +12,7 @@
 #include <omp.h>
 #include <string.h>
 
+// Holds the options given by the user.
 struct Settings {
 	bool recursive;
 	bool invert;
@@ -21,6 +22,8 @@ struct Settings {
 	int terms;
 };
 
+// Checks if the user asks for help.
+// Parameters: argv (char* []) holds the arguments from the user.
 void helpCheck(char *argv[]) {
 	if (argv[1] == std::string("-h") || argv[1] == std::string("--help") || argv[1] == std::string("-help")) {
 		std::cout << "\nPERG - Parallel Expression Reference Grep by Ryan Chui (2017)\n" << std::endl;
@@ -42,6 +45,8 @@ void helpCheck(char *argv[]) {
 }
 
 // Checks if recurrsive and if the output is inverted.
+// Parameters: argc (int) holds the number of arguments.
+//             argv (char* []) holds the arguments from the user.
 Settings getSettings(int argc, char *argv[]) {
 	int term = 1;
 	Settings instance;
@@ -76,12 +81,20 @@ Settings getSettings(int argc, char *argv[]) {
 }
 
 // Gets the term to be sercahed for.
+// Parameters: instance (Setting) holds the user options.
+//             argv (char* []) holds the options given by the user.
 std::string getSearchTerm(Settings instance, char *argv[]) {
 	return std::string(argv[instance.terms]);
 }
 
 
 // Get and print the names of all the files
+// Parameters: cwd (char*) holds the current working directory.
+//             names (std::vector<std::string>) holds the names of all files and directories.
+//             term (std::string) holds the term to search for.
+//             base (int) holds the recurrsion level.
+//             instance (Settings) holds the user options.
+//             count (int*) holds the number of files and directories found.
 std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std::string term, int base, Settings instance, int *count) {
 	DIR *dir;
 	struct dirent *ent;
@@ -102,7 +115,7 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 			}
 		}
 		closedir (dir);
-	}	
+	}
 	if (base == 0) {
 		#pragma omp parallel for schedule(dynamic)
 		for (int i = 0; i < names.size(); ++i) {
@@ -135,6 +148,9 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 }
 
 // Search for term in a single file
+// Parameters: instance (Settings) holds the user given options.
+//             term (std::string) holds the term to search for.
+//             cwd (char*) current working directory.
 void printSingle(Settings instance, std::string term, char *cwd) {
 	std::ifstream file1(instance.file.c_str());
 	std::ifstream file2(instance.file.c_str());
@@ -166,6 +182,10 @@ void printSingle(Settings instance, std::string term, char *cwd) {
 	}
 }
 
+// Checks if the user asks for help
+// Gets the options given by the user.
+// Gets the term searched for by the user.
+// Searches for the term in a file or all files.
 int main(int argc, char *argv[]) {
 	char *cwd = (char*) malloc(sizeof(char) * PATH_MAX);
 	helpCheck(argv);
@@ -180,6 +200,7 @@ int main(int argc, char *argv[]) {
 	} else {
 		printSingle(instance, term, cwd);
 	}
+	free(cwd);
 	delete(count);
 	return 0;
 }

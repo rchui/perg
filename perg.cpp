@@ -84,15 +84,15 @@ std::string getSearchTerm(Settings instance, char *argv[]) {
 // Get and print the names of all the files
 std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std::string term, int base, Settings instance, int *count) {
 	DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir(cwd)) != NULL) {
-	    while((ent = readdir (dir)) != NULL) {
+	struct dirent *ent;
+	if ((dir = opendir(cwd)) != NULL) {
+		while((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent->d_name);
-	        std::string fileName = std::string(cwd) + "/" + fileBuff;
+			std::string fileName = std::string(cwd) + "/" + fileBuff;
 			DIR *dir2;
 			if (fileBuff != "." && fileBuff != "..") {	
 				names[*count] = fileName;
-           		*count += 1;
+				*count += 1;
 			}
 			if ((dir2 = opendir(strdup(fileName.c_str()))) != NULL && fileBuff != "." && fileBuff != ".." && instance.recursive == true) {
 				names = findAll(strdup(fileName.c_str()), names, term, base + 1, instance, count);
@@ -101,15 +101,15 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 				names.resize(*count * 2);
 			}
 		}
-	   	closedir (dir);
+		closedir (dir);
 	}	
 	if (base == 0) {
 		#pragma omp parallel for schedule(dynamic)
 		for (int i = 0; i < names.size(); ++i) {
 			if (names[i] != "") {
-	   	 		std::ifstream file(names[i].c_str());
+				std::ifstream file(names[i].c_str());
 				std::string line;
-	   	    	while (std::getline(file, line)) {
+				while (std::getline(file, line)) {
 					std::stringstream stream;
 					if (instance.verbose == false) {
 						if (line.find(term) != std::string::npos && instance.invert == false) {
@@ -119,9 +119,9 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 							stream << strdup(line.c_str()) << std::endl;
 						}
 					} else {
-	   	   		  		if (line.find(term) != std::string::npos && instance.invert == false) {
+						if (line.find(term) != std::string::npos && instance.invert == false) {
 							stream << strdup(names[i].c_str()) << ": " << strdup(line.c_str()) << std::endl;
-		   		        }
+						}
 						if (!(line.find(term) != std::string::npos) && instance.invert == true) {
 							stream << strdup(names[i].c_str()) << ": " << strdup(line.c_str()) << std::endl;
 						}

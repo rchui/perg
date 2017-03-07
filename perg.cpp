@@ -98,6 +98,7 @@ std::string getSearchTerm(Settings instance, char *argv[]) {
 std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std::string term, int base, Settings instance, int *count) {
 	DIR *dir;
 	struct dirent *ent;
+	// Get file paths recursively.
 	if ((dir = opendir(cwd)) != NULL) {
 		while((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent->d_name);
@@ -116,6 +117,7 @@ std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std:
 		}
 		closedir (dir);
 	}
+	// Print in parallel
 	if (base == 0) {
 		#pragma omp parallel for schedule(dynamic)
 		for (int i = 0; i < names.size(); ++i) {

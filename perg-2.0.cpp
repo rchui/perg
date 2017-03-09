@@ -1,6 +1,16 @@
 #include <iostream>
+#include <string>
 
-void getSettings(int argc, char *argv) {
+struct Settings {
+	bool recursive;
+	bool invert;
+	bool verbose;
+	bool isFile;
+	std::string file;
+	int terms;
+}
+
+void getSettings(int argc, char *argv, std::string *settings) {
 	
 }
 
@@ -27,7 +37,8 @@ void helpCheck(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+	std::string *settings = new std::string[argc];
 	helpCheck(argv);
-	getSettingS(argc, argv);
+	getSettingS(argc, argv, settings);
 	return 0;
 }

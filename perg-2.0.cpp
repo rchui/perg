@@ -1,5 +1,9 @@
 #include <iostream>
 
+void getSettings(int argc, char *argv) {
+	
+}
+
 // Checks if the user asks for help.
 // Parameters: argv (char* []) holds the arguments from the user.
 void helpCheck(char *argv[]) {
@@ -23,6 +27,7 @@ void helpCheck(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-	
+	helpCheck(argv);
+	getSettingS(argc, argv);
 	return 0;
 }

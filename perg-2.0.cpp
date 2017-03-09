@@ -1,4 +1,4 @@
-
+#include <iostream>
 
 // Checks if the user asks for help.
 // Parameters: argv (char* []) holds the arguments from the user.

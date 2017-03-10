@@ -3,6 +3,7 @@
 #include <queue>
 
 struct Settings {
+	Settings(): recursive(), invert(), verbose(), isFile(), file(), terms() {}
 	bool recursive;
 	bool invert;
 	bool verbose;

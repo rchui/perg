@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <queue>
 
 struct Settings {
 	bool recursive;
@@ -8,10 +9,29 @@ struct Settings {
 	bool isFile;
 	std::string file;
 	int terms;
-}
+};
 
-void getSettings(int argc, char *argv, std::string *settings) {
+void getSettings(int argc, char *argv[], Settings *instance) {
+	std::queue<std::string> settings;
+	for (int i = 1; i < argc; i++) {
+		settings.push(argv[i]);
+	}
 	
+	while (!settings.empty()) {
+		std::string arg = settings.front();
+		if (arg == "-r") {
+			(*instance).recursive = true;
+		} else if (arg == "-v") {
+			(*instance).invert = true;
+		} else if (arg == "-V") {
+			(*instance).invert = true;
+		} else if (arg == "-f") {
+			(*instance).isFile = true;
+			settings.pop();
+			(*instance).file = settings.front();
+		}
+		settings.pop();
+	}
 }
 
 // Checks if the user asks for help.
@@ -37,8 +57,8 @@ void helpCheck(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-	std::string *settings = new std::string[argc];
+	Settings *instance = new Settings;
 	helpCheck(argv);
-	getSettingS(argc, argv, settings);
+	getSettings(argc, argv, instance);
 	return 0;
 }

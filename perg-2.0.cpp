@@ -46,33 +46,40 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 }
 
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
-	std::ifstream file1((*filePaths).front().c_str());
-	std::ifstream file2((*filePaths).front().c_str());
-	std::string line;
-	std::regex rgx((*instance).term);
-	int count = 0;
+	while (!(*filePaths).empty()) {
+		std::ifstream file1((*filePaths).front().c_str());
+		std::ifstream file2((*filePaths).front().c_str());
+		std::string line;
+		std::regex rgx((*instance).term);
+		int count = 0;
 
-	for (int i = 0; std::getline(file1, line); ++i) {
-		count++;
-	}
+		for (int i = 0; std::getline(file1, line); ++i) {
+			count++;
+		}
 
-	for (int i = 0; i < count; ++i) {
-		std::getline(file2, line);
-		if ((*instance).verbose) {
-			if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-				std::cout << (*filePaths).front() + ": " + line + "\n";
-			} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-				std::cout << (*filePaths).front() + ": " + line + "\n";
-			}
-		} else {
-			if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-				std::cout << line + "\n";
-			} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-				std::cout << line + "\n";
+		for (int i = 0; i < count; ++i) {
+			std::getline(file2, line);
+			if ((*instance).verbose) {
+				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+					std::cout << (*filePaths).front() + ": " + line + "\n";
+				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << (*filePaths).front() + ": " + line + "\n";
+				}
+			} else {
+				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+					std::cout << line + "\n";
+				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << line + "\n";
+				}
 			}
 		}
+
+		(*filePaths).pop();
 	}
-	(*filePaths).pop();
+}
+
+void findAll(std::queue<std::string> *filePaths) {
+	std::cout << "Finding All..." << std::endl;
 }
 
 // Checks if the user asks for help.
@@ -109,7 +116,7 @@ int main(int argc, char *argv[]) {
 		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);
 		printSingle(filePaths, instance);
 	} else {
-		
+		findAll(filePaths);
 	}
 
 	delete(filePaths);

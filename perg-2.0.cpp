@@ -3,13 +3,13 @@
 #include <queue>
 
 struct Settings {
-	Settings(): recursive(), invert(), verbose(), isFile(), file(), terms() {}
+	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
 	bool recursive;
 	bool invert;
 	bool verbose;
 	bool isFile;
 	std::string file;
-	int terms;
+	std::string term;
 };
 
 void getSettings(int argc, char *argv[], Settings *instance) {
@@ -25,13 +25,20 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		} else if (arg == "-v") {
 			(*instance).invert = true;
 		} else if (arg == "-V") {
-			(*instance).invert = true;
+			(*instance).verbose = true;
 		} else if (arg == "-f") {
 			(*instance).isFile = true;
 			settings.pop();
 			(*instance).file = settings.front();
+		} else {
+			(*instance).term = settings.front();
 		}
 		settings.pop();
+	}
+
+	if ((*instance).term == "") {
+		std::cout << "Search term not given. \"perg -h\" for help." << std::endl;
+		exit(0);
 	}
 }
 

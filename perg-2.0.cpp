@@ -43,6 +43,11 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 	}
 }
 
+void printSingle(std::queue<std::string> *filePaths) {
+	std::cout << (*filePaths).front() << std::endl;
+	(*filePaths).pop();
+}
+
 // Checks if the user asks for help.
 // Parameters: argv (char* []) holds the arguments from the user.
 void helpCheck(char *argv[]) {
@@ -68,12 +73,19 @@ void helpCheck(char *argv[]) {
 int main(int argc, char *argv[]) {
 	Settings *instance = new Settings;
 	char *cwd = (char*) malloc(sizeof(char) * PATH_MAX);
+	std::queue<std::string> *filePaths = new std::queue<std::string>;
 
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
 	getcwd(cwd, PATH_MAX);
-	std::cout << cwd << std::endl;
+	if ((*instance).isFile) {
+		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);
+		printSingle(filePaths);
+	} else {
+		
+	}
 
+	delete(filePaths);
 	free(cwd);
 	delete(instance);
 	return 0;

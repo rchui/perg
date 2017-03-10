@@ -1,7 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <queue>
 #include <unistd.h>
+#include <regex>
 
 struct Settings {
 	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
@@ -43,8 +45,33 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 	}
 }
 
-void printSingle(std::queue<std::string> *filePaths) {
-	std::cout << (*filePaths).front() << std::endl;
+void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
+	std::ifstream file1((*filePaths).front().c_str());
+	std::ifstream file2((*filePaths).front().c_str());
+	std::string line;
+	std::regex rgx((*instance).term);
+	int count = 0;
+
+	for (int i = 0; std::getline(file1, line); ++i) {
+		count++;
+	}
+
+	for (int i = 0; i < count; ++i) {
+		std::getline(file2, line);
+		if ((*instance).verbose) {
+			if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+				std::cout << (*filePaths).front() + ": " + line + "\n";
+			} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+				std::cout << (*filePaths).front() + ": " + line + "\n";
+			}
+		} else {
+			if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+				std::cout << line + "\n";
+			} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+				std::cout << line + "\n";
+			}
+		}
+	}
 	(*filePaths).pop();
 }
 
@@ -80,7 +107,7 @@ int main(int argc, char *argv[]) {
 	getcwd(cwd, PATH_MAX);
 	if ((*instance).isFile) {
 		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);
-		printSingle(filePaths);
+		printSingle(filePaths, instance);
 	} else {
 		
 	}

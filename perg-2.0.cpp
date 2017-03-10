@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <queue>
+#include <unistd.h>
 
 struct Settings {
 	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
@@ -66,7 +67,14 @@ void helpCheck(char *argv[]) {
 
 int main(int argc, char *argv[]) {
 	Settings *instance = new Settings;
+	char *cwd = (char*) malloc(sizeof(char) * PATH_MAX);
+
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
+	getcwd(cwd, PATH_MAX);
+	std::cout << cwd << std::endl;
+
+	free(cwd);
+	delete(instance);
 	return 0;
 }

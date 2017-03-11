@@ -6,6 +6,7 @@
 #include <regex>
 #include <dirent.h>
 #include <cstdlib>
+#include <string.h>
 // #include <omp.h>
 
 struct Settings {
@@ -131,7 +132,6 @@ int main(int argc, char *argv[]) {
 
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
-	std::cout << (*instance).invert << std::endl;
 	getcwd(cwd, PATH_MAX);
 	if ((*instance).isFile) {
 		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);

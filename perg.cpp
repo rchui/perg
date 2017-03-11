@@ -122,11 +122,13 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 			}
 		}
 	}
+	closedir(dir);
 }
+
+char cwd [PATH_MAX];
 
 int main(int argc, char *argv[]) {
 	Settings *instance = new Settings;
-	char *cwd = (char*) malloc(sizeof(char) * PATH_MAX);
 	std::queue<std::string> *filePaths = new std::queue<std::string>;
 
 	helpCheck(argv);
@@ -141,7 +143,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	delete(filePaths);
-	free(cwd);
 	delete(instance);
 	return 0;
 }

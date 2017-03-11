@@ -23,8 +23,6 @@ void helpCheck(char *argv[]) {
 		std::cout << "\nPERG - Parallel Expression Reference Grep by Ryan Chui (2017)\n" << std::endl;
 		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files," << std::endl;
 		std::cout << "    datasets, and directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
-		std::cout << "    Due to the nature of implementation the order of syntax is strict and must be adhered to or " << std::endl;
-		std::cout << "    errors will result. The order flags must always be used in is [-r|-v|-V|-f].\n" << std::endl;
 		std::cout << "    Usage:" << std::endl;
 		std::cout << "    perg [-r|-v|-V|-f <file>] <search term>\n" << std::endl;
 		std::cout << "    Modes:" << std::endl;

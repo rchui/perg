@@ -81,7 +81,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		for (int i = 0; std::getline(file1, line); ++i) {
 			count++;
 		}
-
+		#pragma omp parallel for
 		for (int i = 0; i < count; ++i) {
 			std::getline(file2, line);
 			if ((*instance).verbose) {

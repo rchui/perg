@@ -123,7 +123,6 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 				}
 			}
 		}
-		std::cerr << "Error: " << strerror(errno);
 		closedir(dir);
 	}
 }

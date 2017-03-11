@@ -71,8 +71,8 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
-		std::ifstream file1((*filePaths).front().c_str());
-		std::ifstream file2((*filePaths).front().c_str());
+		std::ifstream file1((*filePaths).front());
+		std::ifstream file2((*filePaths).front());
 		std::string line;
 		std::regex rgx((*instance).term);
 		int count = 0;
@@ -103,7 +103,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	}
 }
 
-void findAll(std::queue<std::string> *filePaths, char* cwd, Settings *instance) {
+void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *instance) {
 	DIR *dir;
 	struct dirent *ent;
 
@@ -111,11 +111,10 @@ void findAll(std::queue<std::string> *filePaths, char* cwd, Settings *instance) 
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
 			if (fileBuff != "." && fileBuff != "..") {
-				DIR *dir2;
 				std::string fileName = std::string(cwd) + "/" + fileBuff;
-				if ((dir2 = opendir(strdup(fileName.c_str()))) != NULL) {
+				if ((opendir(fileName.c_str()) != NULL)) {
 					if ((*instance).recursive) {
-						findAll(filePaths, strdup(fileName.c_str()), instance);
+						findAll(filePaths, fileName.c_str(), instance);
 					}
 				} else {
 					(*filePaths).push(fileName);

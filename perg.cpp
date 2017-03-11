@@ -6,7 +6,7 @@
 #include <regex>
 #include <dirent.h>
 #include <cstdlib>
-#include <omp.h>
+// #include <omp.h>
 
 struct Settings {
 	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
@@ -82,16 +82,16 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 
 		// #pragma omp parallel for schedule(static)
 		for (int i = 0; i < count; ++i) {
-			#pragma omp critical
+			// #pragma omp critical
 			std::getline(file2, line);
 			if ((*instance).verbose) {
-				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
 					std::cout << (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					std::cout << (*filePaths).front() + ": " + line + "\n";
 				}
 			} else {
-				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
 					std::cout << line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					std::cout << line + "\n";
@@ -131,6 +131,7 @@ int main(int argc, char *argv[]) {
 
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
+	std::cout << (*instance).invert << std::endl;
 	getcwd(cwd, PATH_MAX);
 	if ((*instance).isFile) {
 		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);

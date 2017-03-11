@@ -7,10 +7,7 @@ The grep command line utility was first introduced in 1974 as a method of search
 
 ##Installation
 ###GNU C Compiler
-    g++ -o perg -fopenmp per
-
-###Intel C Compiler
-    icc -o perg -openmp perg.cpp
+    g++ -std=c++11 -o perg -fopenmp per
 
 ##Usage
 ###Command Syntax:

@@ -83,20 +83,19 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		}
 		#pragma omp parallel for
 		for (int i = 0; i < count; ++i) {
-			std::string line2;
 			#pragma omp critical
-			std::getline(file2, line2);
+			std::getline(file2, line);
 			if ((*instance).verbose) {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line2 + "\n";
+					std::cout << (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line2 + "\n";
+					std::cout << (*filePaths).front() + ": " + line + "\n";
 				}
 			} else {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << line2 + "\n";
+					std::cout << line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << line2 + "\n";
+					std::cout << line + "\n";
 				}
 			}
 		}

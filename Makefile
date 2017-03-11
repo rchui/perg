@@ -1,5 +1,2 @@
-intel:
-	icc -o perg -openmp perg.cpp
-
 gcc:
-	g++ -o perg -fopenmp perg.cpp
+	g++ -std=c++11 -o perg -fopenmp perg.cpp

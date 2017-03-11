@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <regex>
 #include <dirent.h>
+#include <cstdlib>
 #include <omp.h>
 
 struct Settings {

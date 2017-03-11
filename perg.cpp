@@ -80,11 +80,10 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			count++;
 		}
 
-		#pragma omp parallel for schedule(static)
+		// #pragma omp parallel for schedule(static)
 		for (int i = 0; i < count; ++i) {
-			std::string line2;
-			#pragma omp critical
-			std::getline(file2, line2);
+			// #pragma omp critical
+			std::getline(file2, line);
 			if ((*instance).verbose) {
 				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
 					std::cout << (*filePaths).front() + ": " + line + "\n";

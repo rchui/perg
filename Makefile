@@ -1,3 +1,6 @@
+all:
+	clean gcc
+
 clean:
 	rm -rf perg
 

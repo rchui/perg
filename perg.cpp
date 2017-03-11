@@ -7,7 +7,8 @@
 #include <dirent.h>
 #include <cstdlib>
 #include <string.h>
-// #include <omp.h>
+#include <sstream>
+#include <omp.h>
 
 struct Settings {
 	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
@@ -85,19 +86,21 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		for (int i = 0; i < count; ++i) {
 			#pragma omp critical
 			std::getline(file2, line);
+			std::ostringstream stream;
 			if ((*instance).verbose) {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line + "\n";
+					stream << (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line + "\n";
+					stream << (*filePaths).front() + ": " + line + "\n";
 				}
 			} else {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << line + "\n";
+					stream << line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << line + "\n";
+					stream << line + "\n";
 				}
 			}
+			std::cout << stream.str();
 		}
 		(*filePaths).pop();
 	}

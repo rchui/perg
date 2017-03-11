@@ -1,25 +1,19 @@
 #include <iostream>
-#include <sstream>
-#include <stdio.h>
 #include <fstream>
-#include <vector>
-#include <typeinfo>
-#include <stdlib.h>
 #include <string>
-#include <limits.h>
-#include <dirent.h>
+#include <queue>
 #include <unistd.h>
-#include <omp.h>
-#include <string.h>
+#include <regex>
+#include <dirent.h>
 
-// Holds the options given by the user.
 struct Settings {
+	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
 	bool recursive;
 	bool invert;
 	bool verbose;
 	bool isFile;
 	std::string file;
-	int terms;
+	std::string term;
 };
 
 // Checks if the user asks for help.
@@ -44,165 +38,108 @@ void helpCheck(char *argv[]) {
 	}
 }
 
-// Checks if recurrsive and if the output is inverted.
-// Parameters: argc (int) holds the number of arguments.
-//             argv (char* []) holds the arguments from the user.
-Settings getSettings(int argc, char *argv[]) {
-	int term = 1;
-	Settings instance;
-	if (argv[term] == std::string("-r")) {
-		term++;
-		instance.recursive = true;
-	} else {
-		instance.recursive = false;
+void getSettings(int argc, char *argv[], Settings *instance) {
+	std::queue<std::string> settings;
+	for (int i = 1; i < argc; i++) {
+		settings.push(argv[i]);
 	}
-	if (argv[term] == std::string("-v")) {
-		term++;
-		instance.invert = true;
-	} else {
-		instance.invert = false;
+	
+	while (!settings.empty()) {
+		std::string arg = settings.front();
+		if (arg == "-r") {
+			(*instance).recursive = true;
+		} else if (arg == "-v") {
+			(*instance).invert = true;
+		} else if (arg == "-V") {
+			(*instance).verbose = true;
+		} else if (arg == "-f") {
+			(*instance).isFile = true;
+			settings.pop();
+			(*instance).file = settings.front();
+		} else {
+			(*instance).term = settings.front();
+		}
+		settings.pop();
 	}
-	if (argv[term] == std::string("-V")) {
-		term++;
-		instance.verbose = true;
-	} else {
-		instance.verbose = false;
+
+	if ((*instance).term == "") {
+		std::cout << "Search term not given. \"perg -h\" for help." << std::endl;
+		exit(0);
 	}
-	if (argv[term] == std::string("-f")) {
-		instance.isFile = true;
-		instance.file = argv[term + 1];
-		term += 2;
-	} else {
-		instance.isFile = false;
-		instance.file = "";
-	}
-	instance.terms = term;
-	return instance;
 }
 
-// Gets the term to be sercahed for.
-// Parameters: instance (Setting) holds the user options.
-//             argv (char* []) holds the options given by the user.
-std::string getSearchTerm(Settings instance, char *argv[]) {
-	return std::string(argv[instance.terms]);
-}
+void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
+	while (!(*filePaths).empty()) {
+		std::ifstream file1((*filePaths).front().c_str());
+		std::ifstream file2((*filePaths).front().c_str());
+		std::string line;
+		std::regex rgx((*instance).term);
+		int count = 0;
 
+		for (int i = 0; std::getline(file1, line); ++i) {
+			count++;
+		}
 
-// Get and print the names of all the files
-// Parameters: cwd (char*) holds the current working directory.
-//             names (std::vector<std::string>) holds the names of all files and directories.
-//             term (std::string) holds the term to search for.
-//             base (int) holds the recurrsion level.
-//             instance (Settings) holds the user options.
-//             count (int*) holds the number of files and directories found.
-std::vector<std::string> findAll(char *cwd, std::vector<std::string> names, std::string term, int base, Settings instance, int *count) {
-	DIR *dir;
-	struct dirent *ent;
-	// Get file paths recursively.
-	if ((dir = opendir(cwd)) != NULL) {
-		while((ent = readdir (dir)) != NULL) {
-			std::string fileBuff = std::string(ent->d_name);
-			std::string fileName = std::string(cwd) + "/" + fileBuff;
-			DIR *dir2;
-			if (fileBuff != "." && fileBuff != "..") {	
-				names[*count] = fileName;
-				*count += 1;
-			}
-			if ((dir2 = opendir(strdup(fileName.c_str()))) != NULL && fileBuff != "." && fileBuff != ".." && instance.recursive == true) {
-				names = findAll(strdup(fileName.c_str()), names, term, base + 1, instance, count);
-			}
-			if (*count == names.size()) {
-				names.resize(*count * 2);
+		for (int i = 0; i < count; ++i) {
+			std::getline(file2, line);
+			if ((*instance).verbose) {
+				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+					std::cout << (*filePaths).front() + ": " + line + "\n";
+				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << (*filePaths).front() + ": " + line + "\n";
+				}
+			} else {
+				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+					std::cout << line + "\n";
+				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << line + "\n";
+				}
 			}
 		}
-		closedir (dir);
+		(*filePaths).pop();
 	}
-	// Print in parallel
-	if (base == 0) {
-		#pragma omp parallel for schedule(dynamic)
-		for (int i = 0; i < names.size(); ++i) {
-			if (names[i] != "") {
-				std::ifstream file(names[i].c_str());
-				std::string line;
-				while (std::getline(file, line)) {
-					std::stringstream stream;
-					if (instance.verbose == false) {
-						if (line.find(term) != std::string::npos && instance.invert == false) {
-							stream << strdup(line.c_str()) << std::endl;
-						}
-						if (!(line.find(term) != std::string::npos) && instance.invert == true) {
-							stream << strdup(line.c_str()) << std::endl;
-						}
-					} else {
-						if (line.find(term) != std::string::npos && instance.invert == false) {
-							stream << strdup(names[i].c_str()) << ": " << strdup(line.c_str()) << std::endl;
-						}
-						if (!(line.find(term) != std::string::npos) && instance.invert == true) {
-							stream << strdup(names[i].c_str()) << ": " << strdup(line.c_str()) << std::endl;
-						}
+}
+
+void findAll(std::queue<std::string> *filePaths, char* cwd, Settings *instance) {
+	DIR *dir;
+	struct dirent *ent;
+
+	if ((dir = opendir(cwd)) != NULL) {
+		while ((ent = readdir (dir)) != NULL) {
+			std::string fileBuff = std::string(ent -> d_name);
+			if (fileBuff != "." && fileBuff != "..") {
+				DIR *dir2;
+				std::string fileName = std::string(cwd) + "/" + fileBuff;
+				if ((dir2 = opendir(strdup(fileName.c_str()))) != NULL) {
+					if ((*instance).recursive) {
+						findAll(filePaths, strdup(fileName.c_str()), instance);
 					}
-					std::cout << stream.str();
+				} else {
+					(*filePaths).push(fileName);
 				}
 			}
 		}
 	}
-	return names;
 }
 
-// Search for term in a single file
-// Parameters: instance (Settings) holds the user given options.
-//             term (std::string) holds the term to search for.
-//             cwd (char*) current working directory.
-void printSingle(Settings instance, std::string term, char *cwd) {
-	std::ifstream file1(instance.file.c_str());
-	std::ifstream file2(instance.file.c_str());
-	std::string line;
-	std::string fileName = std::string(cwd) + "/" + instance.file;
-	int count = 0;
-	for (int i = 0; std::getline(file1, line); ++i) {
-		count++;
-	}
-	#pragma omp parallel for schedule(static)
-	for (int i = 0; i < count; ++i) {
-		#pragma omp critical
-		std::getline(file2, line);
-		if (instance.verbose == false) {
-			if (line.find(term) != std::string::npos && instance.invert == false) {
-				printf("%s\n", strdup(line.c_str()));
-			}
-			if (!(line.find(term) != std::string::npos) && instance.invert == true) {
-				printf("%s\n", strdup(line.c_str()));
-			}
-		} else {
-			if (line.find(term) != std::string::npos && instance.invert == false) {
-				printf("%s%s%s\n", strdup(fileName.c_str()), ": ", strdup(line.c_str()));
-			}
-			if (!(line.find(term) != std::string::npos) && instance.invert == true) {
-				printf("%s%s%s\n", strdup(fileName.c_str()), ": ", strdup(line.c_str()));
-			}
-		}
-	}
-}
-
-// Checks if the user asks for help
-// Gets the options given by the user.
-// Gets the term searched for by the user.
-// Searches for the term in a file or all files.
 int main(int argc, char *argv[]) {
+	Settings *instance = new Settings;
 	char *cwd = (char*) malloc(sizeof(char) * PATH_MAX);
+	std::queue<std::string> *filePaths = new std::queue<std::string>;
+
 	helpCheck(argv);
-	std::vector<std::string> names (21);
-	Settings instance = getSettings(argc, argv);
-	std::string term = getSearchTerm(instance, argv);
-	cwd = get_current_dir_name();
-	int base = 0;
-	int *count = new int(1);
-	if (instance.isFile == false) {
-		findAll(cwd, names, term, base, instance, count);
+	getSettings(argc, argv, instance);
+	getcwd(cwd, PATH_MAX);
+	if ((*instance).isFile) {
+		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);
+		printSingle(filePaths, instance);
 	} else {
-		printSingle(instance, term, cwd);
+		findAll(filePaths, cwd, instance);
+		printSingle(filePaths, instance);
 	}
+
+	delete(filePaths);
 	free(cwd);
-	delete(count);
+	delete(instance);
 	return 0;
 }

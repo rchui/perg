@@ -111,8 +111,10 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
 			if (fileBuff != "." && fileBuff != "..") {
+				DIR *dir2;
 				std::string fileName = std::string(cwd) + "/" + fileBuff;
-				if ((opendir(fileName.c_str()) != NULL)) {
+				if ((dir2 = opendir(fileName.c_str())) != NULL) {
+					closedir(dir2);
 					if ((*instance).recursive) {
 						findAll(filePaths, fileName.c_str(), instance);
 					}
@@ -121,8 +123,9 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 				}
 			}
 		}
+		std::cerr << "Error: " << strerror(errno);
+		closedir(dir);
 	}
-	closedir(dir);
 }
 
 char cwd [PATH_MAX];

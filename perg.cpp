@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <regex>
 #include <dirent.h>
+#include <omp.h>
 
 struct Settings {
 	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
@@ -78,7 +79,9 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			count++;
 		}
 
+		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < count; ++i) {
+			#pragma omp critical
 			std::getline(file2, line);
 			if ((*instance).verbose) {
 				if (std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {

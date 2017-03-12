@@ -11,11 +11,12 @@
 #include <omp.h>
 
 struct Settings {
-	Settings(): recursive(), invert(), verbose(), isFile(), file(), term() {}
+	Settings(): recursive(), invert(), verbose(), isFile(), fileWise(), file(), term() {}
 	bool recursive;
 	bool invert;
 	bool verbose;
 	bool isFile;
+	bool fileWise;
 	std::string file;
 	std::string term;
 };
@@ -57,7 +58,13 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		} else if (arg == "-f") {
 			(*instance).isFile = true;
 			settings.pop();
+			if (arg.compare(0, 1, "-") == 0) {
+				std::cout << "Error" << std::endl;
+			}
 			(*instance).file = settings.front();
+		} else if (arg == "-w") {
+			std::cout << "FileWise" << std::endl;
+			(*instance).fileWise = true;
 		} else {
 			(*instance).term = settings.front();
 		}

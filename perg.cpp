@@ -59,12 +59,12 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).isFile = true;
 			settings.pop();
 			if (arg.compare(0, 1, "-") == 0) {
-				std::cout << "Error" << std::endl;
+				std::cout << "The path to the file was not given. \"perg -h\" for help." << std::endl;
 			}
 			(*instance).file = settings.front();
 		} else if (arg == "-w") {
-			std::cout << "FileWise" << std::endl;
 			(*instance).fileWise = true;
+			std::cout << (*instance).fileWise << std::endl;
 		} else {
 			(*instance).term = settings.front();
 		}

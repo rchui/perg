@@ -4,4 +4,4 @@ clean:
 	rm -rf perg
 
 gcc:
-	export PATH
+	g++ -std=c++11 -o perg -fopenmp perg.cpp

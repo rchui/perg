@@ -10,6 +10,7 @@
 #include <sstream>
 #include <omp.h>
 
+// Holds the user-given settings that modify perg behavior.
 struct Settings {
 	Settings(): recursive(), invert(), verbose(), isFile(), fileWise(), file(), term() {}
 	bool recursive;
@@ -44,12 +45,17 @@ void helpCheck(char *argv[]) {
 	}
 }
 
+// Gets the settings given by the user.
+// Parameters: argc (int) number of user arguments.
+//             argv (char *[]) user arguments
+//             instance (Settings *) user argument container.
 void getSettings(int argc, char *argv[], Settings *instance) {
 	std::queue<std::string> settings;
 	for (int i = 1; i < argc; i++) {
 		settings.push(argv[i]);
 	}
 	
+	// Sets settings based off of arguments received.
 	while (!settings.empty()) {
 		std::string arg = settings.front();
 		if (arg == "-r") {
@@ -74,12 +80,16 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		settings.pop();
 	}
 
+	// Check that the search term has been given.
 	if ((*instance).term == "") {
 		std::cout << "Search term not given. \"perg -h\" for help." << std::endl;
 		exit(0);
 	}
 }
 
+// Searches and prints results in a file-wise manner.
+// Parameters: filePaths (std::queue<std::string> *) filepaths of files to search.
+//             instance (Settings *) user argument container.
 void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	std::regex rgx((*instance).term);
 	#pragma omp parallel for schedule(dynamic)
@@ -95,8 +105,8 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 
 		std::ifstream file(fileName);
 		std::string line;
-		printf("Thread %d: %s\n", omp_get_thread_num(), fileName.c_str());
 
+		// Check each line and print results.
 		while (std::getline(file, line)) {
 			if ((*instance).verbose) {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
@@ -115,6 +125,9 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	}
 }
 
+// Searches and prints results in line-wise.
+// Parameters: filePaths (std::queue<std::string> *) filepaths of files to search.
+//             instance (Settings *) user argument container.
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
@@ -126,6 +139,8 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		for (int i = 0; std::getline(file1, line1); ++i) {
 			count++;
 		}
+
+		// Check each line and print results.
 		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < count; ++i) {
 			std::string line2;
@@ -149,16 +164,23 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	}
 }
 
+// Recursively find and stores all file paths to search.
+// Parameters: filePaths (std::queue<std::string> *) filepaths of files to search.
+//             cwd (const char *) current working directory of files to store.
+//             instance (Settings *) user argument container.
 void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *instance) {
 	DIR *dir;
 	struct dirent *ent;
 
+	// Check if cwd is a directory.
 	if ((dir = opendir(cwd)) != NULL) {
+		// Get all file paths within directory.
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
 			if (fileBuff != "." && fileBuff != "..") {
 				DIR *dir2;
 				std::string fileName = std::string(cwd) + "/" + fileBuff;
+				// Check if file path is a directory.
 				if ((dir2 = opendir(fileName.c_str())) != NULL) {
 					closedir(dir2);
 					if ((*instance).recursive) {
@@ -175,6 +197,12 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 
 char cwd [PATH_MAX];
 
+// Checks to see if the user asks for help.
+// Gets the settings set by the user.
+// Stores the file names of all files to be searched.
+// Prints search results.
+// Parameters: argc (int) number of user arguments.
+//             argv (char *[]) user given arguments.
 int main(int argc, char *argv[]) {
 	Settings *instance = new Settings;
 	std::queue<std::string> *filePaths = new std::queue<std::string>;
@@ -182,6 +210,7 @@ int main(int argc, char *argv[]) {
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
 	getcwd(cwd, PATH_MAX);
+
 	if ((*instance).isFile) {
 		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);
 		printSingle(filePaths, instance);

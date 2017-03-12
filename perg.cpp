@@ -84,12 +84,13 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
+		int tid = omp_get_thread_num();
 		#pragma omp critical
 		{
 			fileName = (*filePaths).front();
 			(*filePaths).pop();
 		}
-		std::cout << "Thread " + omp_get_thread_num() + std::string(": ") + fileName + "\n";
+		std::cout << "Thread " + tid + std::string(": ") + fileName + "\n";
 	}
 }
 

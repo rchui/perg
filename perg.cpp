@@ -81,16 +81,37 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 }
 
 void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
+	std::regex rgx((*instance).term);
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
 		int tid = omp_get_thread_num();
+
 		#pragma omp critical
 		{
 			fileName = (*filePaths).front();
 			(*filePaths).pop();
 		}
+
+		std::ifstream file(fileName);
+		std::string line;
 		printf("Thread %d: %s\n", omp_get_thread_num(), fileName.c_str());
+
+		while (std::getline(file, line)) {
+			if ((*instance).verbose) {
+				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+					std::cout << (*filePaths).front() + ": " + line + "\n";
+				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << (*filePaths).front() + ": " + line + "\n";
+				}
+			} else {
+				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
+					std::cout << line + "\n";
+				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << line + "\n";
+				}
+			}
+		}
 	}
 }
 
@@ -98,11 +119,11 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
 		std::ifstream file2((*filePaths).front());
-		std::string line;
+		std::string line1;
 		std::regex rgx((*instance).term);
 		int count = 0;
 
-		for (int i = 0; std::getline(file1, line); ++i) {
+		for (int i = 0; std::getline(file1, line1); ++i) {
 			count++;
 		}
 		#pragma omp parallel for schedule(static)
@@ -113,7 +134,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			if ((*instance).verbose) {
 				if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
 					std::cout << (*filePaths).front() + ": " + line2 + "\n";
-				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+				} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
 					std::cout << (*filePaths).front() + ": " + line2 + "\n";
 				}
 			} else {

@@ -89,7 +89,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 			fileName = (*filePaths).front();
 			(*filePaths).pop();
 		}
-		std::cout << "Thread " + omp_get_thread_num() + std:string(": ") + fileName + "\n";
+		std::cout << "Thread " + omp_get_thread_num() + std::string(": ") + fileName + "\n";
 	}
 }
 

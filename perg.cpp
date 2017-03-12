@@ -29,7 +29,7 @@ void helpCheck(char *argv[]) {
 		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files, datasets, and\n";
 		std::cout << "    directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
 		std::cout << "    Usage:\n";
-		std::cout << "    perg [-r|-v|-V|-f <file>] <search term>\n" << std::endl;
+		std::cout << "    perg [-f <file>|-r|-v|-V|-w] <search term>\n" << std::endl;
 		std::cout << "    Modes:\n";
 		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
@@ -39,7 +39,7 @@ void helpCheck(char *argv[]) {
 		std::cout << "    -V    Enable Verbose        The file path to the file will be printed along with the search result.\n" << std::endl;
 		std::cout << "    -w    File Parallelism      Signals perg to perform single-threaded searches of multiple files. Default\n";
 		std::cout << "                                search behavior is to search files one at a time with mulitple threads.\n";
-		std::cout << "                                This is optimal when the files are small, similar size, or there are a lot.\n" << std::endl;
+		std::cout << "                                This is optimal when the files are small, similar size, or there are many.\n" << std::endl;
 		exit(0);
 	}
 }
@@ -80,6 +80,19 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 	}
 }
 
+void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
+	#pragma omp parallel for schedule(dynamic)
+	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
+		std::string fileName;
+		#pragma omp critical
+		{
+			fileName = (*filePaths).front();
+			(*filePaths).pop();
+		}
+		std::cout << "Thread " + omp_get_thread_num() + ": " + fileName + "\n";
+	}
+}
+
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
@@ -91,7 +104,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		for (int i = 0; std::getline(file1, line); ++i) {
 			count++;
 		}
-		#pragma omp parallel for
+		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < count; ++i) {
 			std::string line2;
 			#pragma omp critical
@@ -152,7 +165,11 @@ int main(int argc, char *argv[]) {
 		printSingle(filePaths, instance);
 	} else {
 		findAll(filePaths, cwd, instance);
-		printSingle(filePaths, instance);
+		if ((*instance).fileWise) {
+			printMultiple(filePaths, instance);
+		} else {
+			printSingle(filePaths, instance);
+		}
 	}
 
 	delete(filePaths);

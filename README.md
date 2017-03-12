@@ -15,15 +15,15 @@ Need at least GNU C Compiler (4.9) with OpenMP.
     perg [-f <file> | -r | -v | -V | -w] <search term>
 
 ###Modes:
-    -f    Single File Search.   Signals perg to only search the <file> for the <search term>. If -f is not
+    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not
                                 used, perg will search the entire directory from where perg is called from.
                                 
-    -r    Recursive Search.     Recursively searches through the directory and all sub directories for the 
+    -r    Recursive Search      Recursively searches through the directory and all sub directories for the 
                                 given <search term>. Will not do anything if the [-f <file>] flag is given.
 
-    -v    Search Inversion.     Search for every line that does not include the <search term>.
+    -v    Search Inversion      Search for every line that does not include the <search term>.
 
-    -V    Enable Verbose.       The file path to the file will be printed along with the search result.
+    -V    Enable Verbose        The file path to the file will be printed along with the search result.
     
     -w    File Parallelism      Signals perg to perform single-threaded searches of multiple files. Default
                                 search behavior is to search files one at a time with mulitple threads.

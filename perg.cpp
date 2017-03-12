@@ -26,17 +26,20 @@ struct Settings {
 void helpCheck(char *argv[]) {
 	if (argv[1] == std::string("-h") || argv[1] == std::string("--help") || argv[1] == std::string("-help")) {
 		std::cout << "\nPERG - Parallel Expression Reference Grep by Ryan Chui (2017)\n" << std::endl;
-		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files," << std::endl;
-		std::cout << "    datasets, and directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
-		std::cout << "    Usage:" << std::endl;
+		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files, datasets, and\n";
+		std::cout << "    directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
+		std::cout << "    Usage:\n";
 		std::cout << "    perg [-r|-v|-V|-f <file>] <search term>\n" << std::endl;
-		std::cout << "    Modes:" << std::endl;
-		std::cout << "    -r    Recursive Search.     Recursively searches through the directory and all sub directories for the " << std::endl;
-		std::cout << "                                given <search term>. Will not do anything if the [-f <file>] flag is given.\n" << std::endl;
-		std::cout << "    -v    Search Inversion.     Search for every line that does not include the <search term>.\n" << std::endl;
-		std::cout << "    -V    Enable Verbose.       The file path to the file will be printed along with the search result.\n" << std::endl;
-		std::cout << "    -f    Single File Search.   Signals perg to only search the <file> for the <search term>. If -f is not" << std::endl;
+		std::cout << "    Modes:\n";
+		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
+		std::cout << "    -r    Recursive Search      Recursively searches through the directory and all sub directories for the \n";
+		std::cout << "                                given <search term>. Will not do anything if the [-f <file>] flag is given.\n" << std::endl;
+		std::cout << "    -v    Search Inversion      Search for every line that does not include the <search term>.\n" << std::endl;
+		std::cout << "    -V    Enable Verbose        The file path to the file will be printed along with the search result.\n" << std::endl;
+		std::cout << "    -w    File Parallelism      Signals perg to perform single-threaded searches of multiple files. Default\n";
+		std::cout << "                                search behavior is to search files one at a time with mulitple threads.\n";
+		std::cout << "                                This is optimal when the files are small, similar size, or there are a lot.\n" << std::endl;
 		exit(0);
 	}
 }
@@ -60,11 +63,11 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			settings.pop();
 			if (arg.compare(0, 1, "-") == 0) {
 				std::cout << "The path to the file was not given. \"perg -h\" for help." << std::endl;
+				exit(0);
 			}
 			(*instance).file = settings.front();
 		} else if (arg == "-w") {
 			(*instance).fileWise = true;
-			std::cout << (*instance).fileWise << std::endl;
 		} else {
 			(*instance).term = settings.front();
 		}

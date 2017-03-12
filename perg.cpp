@@ -90,7 +90,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 			fileName = (*filePaths).front();
 			(*filePaths).pop();
 		}
-		std::cout << "Thread " + tid + std::string(": ") + fileName + "\n";
+		std::cout << tid + "\n";
 	}
 }
 

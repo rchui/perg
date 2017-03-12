@@ -90,7 +90,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 			fileName = (*filePaths).front();
 			(*filePaths).pop();
 		}
-		std::cout << tid + "\n";
+		printf("Thread rank: %d\n", omp_get_thread_num())
 	}
 }
 

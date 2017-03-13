@@ -10,6 +10,9 @@ Need at least GNU C Compiler (4.9) with OpenMP.
 ###GNU C Compiler
     g++ -std=c++11 -o perg -fopenmp perg.cpp
 
+###Makefile
+    make
+
 ##Usage
 ###Command Syntax:
     perg [-f <file> | -r | -v | -V | -w] <search term>

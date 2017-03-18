@@ -12,12 +12,20 @@
 
 // Holds the user-given settings that modify perg behavior.
 struct Settings {
-	Settings(): recursive(), invert(), verbose(), isFile(), fileWise(), file(), term() {}
+	Settings(): recursive(),
+				invert(),
+				verbose(),
+				isFile(),
+				fileWise(),
+				hidden(),
+				file(),
+				term() {}
 	bool recursive;
 	bool invert;
 	bool verbose;
 	bool isFile;
 	bool fileWise;
+	bool hidden;
 	std::string file;
 	std::string term;
 };
@@ -34,6 +42,8 @@ void helpCheck(char *argv[]) {
 		std::cout << "    Modes:\n";
 		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
+		std::cout << "    -h    Include Hidden        Will include hidden files in the search. Default search behavior is to\n";
+		std::cout << "                                ignore hidden files." << std::endl;
 		std::cout << "    -r    Recursive Search      Recursively searches through the directory and all sub directories for the \n";
 		std::cout << "                                given <search term>. Will not do anything if the [-f <file>] flag is given.\n" << std::endl;
 		std::cout << "    -v    Search Inversion      Search for every line that does not include the <search term>.\n" << std::endl;

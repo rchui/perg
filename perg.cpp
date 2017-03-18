@@ -140,6 +140,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 //             instance (Settings *) user argument container.
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
+		std::cout << (*filePaths).front() << std::endl;
 		std::ifstream file1((*filePaths).front());
 		std::ifstream file2((*filePaths).front());
 		std::string line1;
@@ -187,7 +188,7 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 		// Get all file paths within directory.
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
-			if (fileBuff != "." && fileBuff != "..") {
+			if (fileBuff[0] != '.' || (fileBuff[0] != '.' && fileBuff[1] != '.')) {
 				DIR *dir2;
 				std::string fileName = std::string(cwd) + "/" + fileBuff;
 				// Check if file path is a directory.

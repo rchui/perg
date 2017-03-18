@@ -199,7 +199,13 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 						findAll(filePaths, fileName.c_str(), instance);
 					}
 				} else {
-					(*filePaths).push(fileName);
+					if ((*instance).checkHidden) {
+						(*filePaths).push(fileName);
+					} else {
+						if (fileBuff[0] != '.') {
+							(*filePaths).push(fileName);
+						}
+					}
 				}
 			}
 		}

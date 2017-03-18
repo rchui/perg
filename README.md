@@ -17,7 +17,10 @@ Need at least GNU C Compiler (4.9) with OpenMP.
 ###Modes:
     -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not
                                 used, perg will search the entire directory from where perg is called from.
-                                
+
+    -h    Include Hidden        Will include hidden files in the search. Default search behavior is to
+                                ignore hidden files.
+
     -r    Recursive Search      Recursively searches through the directory and all sub directories for the 
                                 given <search term>. Will not do anything if the [-f <file>] flag is given.
 

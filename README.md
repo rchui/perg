@@ -15,7 +15,7 @@ Need at least GNU C Compiler (4.9) with OpenMP.
 
 ## Usage
 ### Command Syntax:
-    perg [-f <file> | -r | -v | -V | -w] <search term>
+    perg [-f <file> | -h | -r | -v | -V | -w] <search term>
 
 ### Modes:
 

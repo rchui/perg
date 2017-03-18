@@ -12,12 +12,20 @@
 
 // Holds the user-given settings that modify perg behavior.
 struct Settings {
-	Settings(): recursive(), invert(), verbose(), isFile(), fileWise(), file(), term() {}
+	Settings(): recursive(),
+				invert(),
+				verbose(),
+				isFile(),
+				fileWise(),
+				checkHidden(),
+				file(),
+				term() {}
 	bool recursive;
 	bool invert;
 	bool verbose;
 	bool isFile;
 	bool fileWise;
+	bool checkHidden;
 	std::string file;
 	std::string term;
 };
@@ -34,6 +42,8 @@ void helpCheck(char *argv[]) {
 		std::cout << "    Modes:\n";
 		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
+		std::cout << "    -h    Include Hidden        Will include hidden files in the search. Default search behavior is to\n";
+		std::cout << "                                ignore hidden files." << std::endl;
 		std::cout << "    -r    Recursive Search      Recursively searches through the directory and all sub directories for the \n";
 		std::cout << "                                given <search term>. Will not do anything if the [-f <file>] flag is given.\n" << std::endl;
 		std::cout << "    -v    Search Inversion      Search for every line that does not include the <search term>.\n" << std::endl;
@@ -68,13 +78,19 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).isFile = true;
 			settings.pop();
 			if (arg.compare(0, 1, "-") == 0) {
-				std::cout << "The path to the file was not given. \"perg -h\" for help." << std::endl;
+				std::cout << "ERROR: The path to the file was not given. \"perg -h\" for help." << std::endl;
 				exit(0);
 			}
 			(*instance).file = settings.front();
 		} else if (arg == "-w") {
 			(*instance).fileWise = true;
+		} else if (arg == "-h") {
+			(*instance).checkHidden = true;
 		} else {
+			if (settings.size() > 1) {
+				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;
+				exit(0);
+			}
 			(*instance).term = settings.front();
 		}
 		settings.pop();
@@ -82,7 +98,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 
 	// Check that the search term has been given.
 	if ((*instance).term == "") {
-		std::cout << "Search term not given. \"perg -h\" for help." << std::endl;
+		std::cout << "ERROR: Search term not given. \"perg -h\" for help." << std::endl;
 		exit(0);
 	}
 }
@@ -95,7 +111,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
-		int tid = omp_get_thread_num();
 
 		#pragma omp critical
 		{
@@ -178,16 +193,32 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
 			if (fileBuff != "." && fileBuff != "..") {
-				DIR *dir2;
-				std::string fileName = std::string(cwd) + "/" + fileBuff;
-				// Check if file path is a directory.
-				if ((dir2 = opendir(fileName.c_str())) != NULL) {
-					closedir(dir2);
-					if ((*instance).recursive) {
-						findAll(filePaths, fileName.c_str(), instance);
+				if ((*instance).checkHidden) {	
+					DIR *dir2;
+					std::string fileName = std::string(cwd) + "/" + fileBuff;
+					// Check if file path is a directory.
+					if ((dir2 = opendir(fileName.c_str())) != NULL) {
+						closedir(dir2);
+						if ((*instance).recursive) {
+							findAll(filePaths, fileName.c_str(), instance);
+						}
+					} else {
+						(*filePaths).push(fileName);
 					}
 				} else {
-					(*filePaths).push(fileName);
+					if (fileBuff[0] != '.') {	
+						DIR *dir2;
+						std::string fileName = std::string(cwd) + "/" + fileBuff;
+						// Check if file path is a directory.
+						if ((dir2 = opendir(fileName.c_str())) != NULL) {
+							closedir(dir2);
+							if ((*instance).recursive) {
+								findAll(filePaths, fileName.c_str(), instance);
+							}
+						} else {
+							(*filePaths).push(fileName);
+						}
+					}
 				}
 			}
 		}

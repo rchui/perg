@@ -140,7 +140,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 //             instance (Settings *) user argument container.
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
-		std::cout << (*filePaths).front() << std::endl;
 		std::ifstream file1((*filePaths).front());
 		std::ifstream file2((*filePaths).front());
 		std::string line1;

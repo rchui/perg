@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <string.h>
 #include <sstream>
-// #include <omp.h>
+#include <omp.h>
 
 // Holds the user-given settings that modify perg behavior.
 struct Settings {
@@ -107,7 +107,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
-		// int tid = omp_get_thread_num();
+		int tid = omp_get_thread_num();
 
 		#pragma omp critical
 		{
@@ -190,19 +190,29 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
 			if (fileBuff != "." && fileBuff != "..") {
-				DIR *dir2;
-				std::string fileName = std::string(cwd) + "/" + fileBuff;
-				// Check if file path is a directory.
-				if ((dir2 = opendir(fileName.c_str())) != NULL) {
-					closedir(dir2);
-					if ((*instance).recursive) {
-						findAll(filePaths, fileName.c_str(), instance);
+				if ((*instance).checkHidden) {	
+					DIR *dir2;
+					std::string fileName = std::string(cwd) + "/" + fileBuff;
+					// Check if file path is a directory.
+					if ((dir2 = opendir(fileName.c_str())) != NULL) {
+						closedir(dir2);
+						if ((*instance).recursive) {
+							findAll(filePaths, fileName.c_str(), instance);
+						}
+					} else {
+						(*filePaths).push(fileName);
 					}
 				} else {
-					if ((*instance).checkHidden) {
-						(*filePaths).push(fileName);
-					} else {
-						if (fileBuff[0] != '.') {
+					if (fileBuff[0] != '.') {	
+						DIR *dir2;
+						std::string fileName = std::string(cwd) + "/" + fileBuff;
+						// Check if file path is a directory.
+						if ((dir2 = opendir(fileName.c_str())) != NULL) {
+							closedir(dir2);
+							if ((*instance).recursive) {
+								findAll(filePaths, fileName.c_str(), instance);
+							}
+						} else {
 							(*filePaths).push(fileName);
 						}
 					}
@@ -227,7 +237,6 @@ int main(int argc, char *argv[]) {
 
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
-	std::cout << (*instance).checkHidden << std::endl;
 	getcwd(cwd, PATH_MAX);
 
 	if ((*instance).isFile) {

@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <string.h>
 #include <sstream>
-#include <omp.h>
+// #include <omp.h>
 
 // Holds the user-given settings that modify perg behavior.
 struct Settings {
@@ -17,7 +17,7 @@ struct Settings {
 				verbose(),
 				isFile(),
 				fileWise(),
-				hidden(),
+				checkHidden(),
 				file(),
 				term() {}
 	bool recursive;
@@ -25,7 +25,7 @@ struct Settings {
 	bool verbose;
 	bool isFile;
 	bool fileWise;
-	bool hidden;
+	bool checkHidden;
 	std::string file;
 	std::string term;
 };
@@ -84,6 +84,8 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).file = settings.front();
 		} else if (arg == "-w") {
 			(*instance).fileWise = true;
+		} else if (arg == "-h") {
+			(*instance).checkHidden = true;
 		} else {
 			(*instance).term = settings.front();
 		}
@@ -105,7 +107,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
-		int tid = omp_get_thread_num();
+		// int tid = omp_get_thread_num();
 
 		#pragma omp critical
 		{
@@ -187,7 +189,7 @@ void findAll(std::queue<std::string> *filePaths, const char *cwd, Settings *inst
 		// Get all file paths within directory.
 		while ((ent = readdir (dir)) != NULL) {
 			std::string fileBuff = std::string(ent -> d_name);
-			if (fileBuff[0] != '.' || (fileBuff[0] != '.' && fileBuff[1] != '.')) {
+			if (fileBuff != "." && fileBuff != "..") {
 				DIR *dir2;
 				std::string fileName = std::string(cwd) + "/" + fileBuff;
 				// Check if file path is a directory.
@@ -219,6 +221,7 @@ int main(int argc, char *argv[]) {
 
 	helpCheck(argv);
 	getSettings(argc, argv, instance);
+	std::cout << (*instance).checkHidden << std::endl;
 	getcwd(cwd, PATH_MAX);
 
 	if ((*instance).isFile) {

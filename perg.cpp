@@ -78,7 +78,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).isFile = true;
 			settings.pop();
 			if (arg.compare(0, 1, "-") == 0) {
-				std::cout << "The path to the file was not given. \"perg -h\" for help." << std::endl;
+				std::cout << "ERROR: The path to the file was not given. \"perg -h\" for help." << std::endl;
 				exit(0);
 			}
 			(*instance).file = settings.front();
@@ -87,6 +87,10 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		} else if (arg == "-h") {
 			(*instance).checkHidden = true;
 		} else {
+			if (settings.size() > 1) {
+				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;
+				exit(0);
+			}
 			(*instance).term = settings.front();
 		}
 		settings.pop();
@@ -94,7 +98,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 
 	// Check that the search term has been given.
 	if ((*instance).term == "") {
-		std::cout << "Search term not given. \"perg -h\" for help." << std::endl;
+		std::cout << "ERROR: Search term not given. \"perg -h\" for help." << std::endl;
 		exit(0);
 	}
 }
@@ -107,7 +111,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
-		int tid = omp_get_thread_num();
 
 		#pragma omp critical
 		{

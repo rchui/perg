@@ -42,7 +42,7 @@ void helpCheck(char *argv[]) {
 		std::cout << "    Modes:\n";
 		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
-		std::cout << "    -h    Include Hidden        Will include hidden files in the search. Default search behavior is to\n";
+		std::cout << "    -i    Include Hidden        Will include hidden files in the search. Default search behavior is to\n";
 		std::cout << "                                ignore hidden files." << std::endl;
 		std::cout << "    -r    Recursive Search      Recursively searches through the directory and all sub directories for the \n";
 		std::cout << "                                given <search term>. Will not do anything if the [-f <file>] flag is given.\n" << std::endl;
@@ -84,7 +84,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).file = settings.front();
 		} else if (arg == "-w") {
 			(*instance).fileWise = true;
-		} else if (arg == "-h") {
+		} else if (arg == "-i") {
 			(*instance).checkHidden = true;
 		} else {
 			if (settings.size() > 1) {

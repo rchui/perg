@@ -34,7 +34,7 @@ struct Settings {
 // Parameters: argv (char* []) holds the arguments from the user.
 void helpCheck(char *argv[]) {
 	if (argv[1] == std::string("-h") || argv[1] == std::string("--help") || argv[1] == std::string("-help")) {
-		std::cout << "\nPERG - Parallel Exploritory Recursive Grep by Ryan Chui (2017)\n" << std::endl;
+		std::cout << "\nPERG - Parallel grep by Ryan Chui (2017)\n" << std::endl;
 		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files, datasets, and\n";
 		std::cout << "    directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
 		std::cout << "    Usage:\n";

@@ -21,7 +21,7 @@ Compiler must have C++11 support.
 
 ## Usage
 ### Command Syntax:
-    perg [-f <file> | -h | -r | -v | -V | -w] <search term>
+    perg [-A <#> | -f <file> | -h | -r | -v | -V | -w] <search term>
 
 ### Modes:
 

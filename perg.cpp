@@ -18,6 +18,8 @@ struct Settings {
 				isFile(),
 				fileWise(),
 				checkHidden(),
+				extra(),
+				numExtra,
 				file(),
 				term() {}
 	bool recursive;
@@ -26,6 +28,8 @@ struct Settings {
 	bool isFile;
 	bool fileWise;
 	bool checkHidden;
+	bool extra;
+	int numExtra;
 	std::string file;
 	std::string term;
 };

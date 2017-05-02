@@ -148,7 +148,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 					output += fileName + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					output += fileName + ": " + line + "\n";
-					std::cout << output + "\n";
 					if ((*instance).extra) {
 						try {
 							for (int j = 0; j < (*instance).numExtra; ++j) {

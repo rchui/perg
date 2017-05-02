@@ -19,7 +19,7 @@ struct Settings {
 				fileWise(),
 				checkHidden(),
 				extra(),
-				numExtra,
+				numExtra(),
 				file(),
 				term() {}
 	bool recursive;

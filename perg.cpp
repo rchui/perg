@@ -193,6 +193,8 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		
 		int numThreads = omp_get_max_threads();
 		int blockSize = count / numThreads + 1;
+		std::cout << count << std::endl;
+		std::cout << numThreads << std::endl;
 		std::cout << blockSize << std::endl;
 
 		// Check each line and print results.

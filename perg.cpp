@@ -182,7 +182,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
-		std::ifstream file2((*filePaths).front());
 		std::string line1;
 		std::regex rgx((*instance).term);
 		int count = 0;
@@ -190,27 +189,55 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		for (int i = 0; std::getline(file1, line1); ++i) {
 			count++;
 		}
-
-		std::cout << omp_get_max_threads() << std::endl;
+		
+		int numThreads = omp_get_max_threads();
+		int blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
 		#pragma omp parallel for schedule(static)
-		for (int i = 0; i < count; ++i) {
+		for (int i = 0; i < numThreads; ++i) {
+			std::ifstream file2((*filePaths).front());
 			std::string line2;
-			#pragma omp critical
-			std::getline(file2, line2);
-			if ((*instance).verbose) {
-				if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line2 + "\n";
-				} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line2 + "\n";
-				}
-			} else {
-				if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
-					std::cout << line2 + "\n";
-				} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
-					std::cout << line2 + "\n";
-				}
+			int start = i * blockSize;
+
+			for (int j = 0; j < min(count, start); ++j) {
+				std::getline(file2, line2);
+			}
+
+			for (j = start; j < min(count, start + blockSize); ++j) {
+				if ((*instance).verbose) {
+					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
+						std::cout << (*filePaths).front() + ": " + line2 + "\n";
+					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
+						std::cout << (*filePaths).front() + ": " + line2 + "\n";
+						if ((*instance).extra) {
+							try {
+								for (int j = 0; j < (*instance).numExtra; ++j) {
+									std::getline(file, line);
+									std::cout << (*filePaths).front() + ": " + line + "\n";
+								}
+							} catch (...) {
+								std::cout << "ERROR: Could not grab line because it did not exist.\n";
+							}
+						}
+					}
+				} else {
+					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
+						std::cout << line2 + "\n";
+					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
+						std::cout << line2 + "\n";
+						if ((*instance).extra) {
+							try {
+								for (int j = 0; j < (*instance).numExtra; ++j) {
+									std::getline(file, line);
+									std::cout << line + "\n";
+								}
+							} catch (...) {
+								std::cout << "ERROR: Could not grab line because it did not exist.\n";
+							}
+						}
+					}
+				}	
 			}
 		}
 		(*filePaths).pop();

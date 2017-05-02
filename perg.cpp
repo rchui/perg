@@ -167,6 +167,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 						}
 					}
 				}
+				std::cout << "Exiting Verbose\n";
 			} else {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
 					output += line + "\n";

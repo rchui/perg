@@ -149,7 +149,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 								std::cout << (*filePaths).front() + ": " + line + "\n";
 							}
 						} catch (...) {
-							std::cout << "ERROR: Could not grab line because it did not exist.\n"
+							std::cout << "ERROR: Could not grab line because it did not exist.\n";
 						}
 					}
 				}
@@ -165,7 +165,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 								std::cout << line + "\n";
 							}
 						} catch (...) {
-							std::cout << "ERROR: Could not grab line because it did not exist.\n"
+							std::cout << "ERROR: Could not grab line because it did not exist.\n";
 						}
 					}
 				}

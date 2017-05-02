@@ -195,7 +195,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		int blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
-		#pragma omp parallel for schedule(static)
+		// #pragma omp parallel for schedule(static)
 		for (int i = 0; i < numThreads; ++i) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;

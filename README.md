@@ -8,7 +8,7 @@ Compiler must have C++11 support.
 
 ## Installation
 ### GNU C Compiler
-    g++ -std=c++11 -O3 -o perg -fopenmp perg.cpp
+    g++ -std=c++11 -fopenmp -O3 -o perg perg.cpp
 
 ### Makefile
     make

@@ -128,6 +128,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
+		std::string output;
 
 		#pragma omp critical
 		{
@@ -140,39 +141,45 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 
 		// Check each line and print results.
 		while (std::getline(file, line)) {
+			output = "";
 			if ((*instance).verbose) {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line + "\n";
+					output += (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line + "\n";
+					output += (*filePaths).front() + ": " + line + "\n";
 					if ((*instance).extra) {
+						std::streampos oldPos = file.tellg();
 						try {
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
-								std::cout << (*filePaths).front() + ": " + line + "\n";
+								output += (*filePaths).front() + ": " + line + "\n";
 							}
 						} catch (...) {
 							std::cout << "ERROR: Could not grab line because it did not exist.\n";
 						}
+						file.seekg(oldPos);
 					}
 				}
 			} else {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << line + "\n";
+					output += line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << line + "\n";
+					output += line + "\n";
 					if ((*instance).extra) {
+						std::streampos oldPos = file.tellg();
 						try {
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
-								std::cout << line + "\n";
+								output += line + "\n";
 							}
 						} catch (...) {
 							std::cout << "ERROR: Could not grab line because it did not exist.\n";
 						}
+						file.seekg(oldPos);
 					}
 				}
 			}
+			std::cout << output;
 		}
 	}
 }
@@ -195,7 +202,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		int blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
-		// #pragma omp parallel for schedule(static)
+		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < numThreads; ++i) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
@@ -220,7 +227,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 							try {
 								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
-									output += (*filePaths).front() + ": " + line2 + "\n";
+									output += line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";

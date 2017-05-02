@@ -182,7 +182,10 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 				}
 			}
 			if ((*instance).extra) {
-				std::cout << output + "--\n";
+				if (output != "") {
+					output += "--\n";
+				}
+				std::cout << output;
 			} else {
 				std::cout << output;	
 			}

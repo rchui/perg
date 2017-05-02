@@ -200,10 +200,10 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
 			int start = i * blockSize;
-			std::cout << start << std::endl;
 
 			for (int j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);
+				std::cout << line2 << std::endl;
 			}
 
 			for (int j = start; j < std::min(count, start + blockSize); ++j) {

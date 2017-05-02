@@ -10,6 +10,12 @@ Need at least GNU C Compiler (4.9) with OpenMP.
 
 ### Makefile
     make
+    
+### Intel C Compiler
+    icc -std=c++11 -openmp -O3 -o perg perg.cpp
+    
+### Makefile
+    make icc
 
 ## Usage
 ### Command Syntax:

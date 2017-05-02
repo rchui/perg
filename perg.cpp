@@ -193,17 +193,14 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		
 		int numThreads = omp_get_max_threads();
 		int blockSize = count / numThreads + 1;
-		std::cout << count << std::endl;
-		std::cout << numThreads << std::endl;
-		std::cout << blockSize << std::endl;
 
 		// Check each line and print results.
 		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < numThreads; ++i) {
+			std::cout << i * blockSize << std::endl;
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
 			int start = i * blockSize;
-			std::cout << start  + "\n";
 
 			for (int j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);

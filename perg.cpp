@@ -208,7 +208,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 				std::getline(file2, line2);
 			}
 
-			for (int j = start; j < std::min(count, start + blockSize - 1); ++j) {
+			for (int j = start; j < std::min(count, start + blockSize); ++j) {
 				output = "";
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
@@ -216,15 +216,16 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
 						output += (*filePaths).front() + ": " + line2 + "\n";
 						if ((*instance).extra) {
+							std::streampos oldPos = file2.tellg();
 							try {
 								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
-									++j;
 									output += (*filePaths).front() + ": " + line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
 							}
+							file2.seekg(oldPos);
 						}
 					}
 				} else {
@@ -233,15 +234,16 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
 						output += line2 + "\n";
 						if ((*instance).extra) {
+							std::streampos oldPos = file2.tellg();
 							try {
 								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
-									++j;
 									output += line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
 							}
+							file2.seekg(oldPos);
 						}
 					}
 				}

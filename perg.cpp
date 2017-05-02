@@ -146,10 +146,10 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 			if ((*instance).verbose) {
 				std::cout << "Enter Verbose\n";
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					output += (*filePaths).front() + ": " + line + "\n";
+					output += fileName + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					std::cout << "Enter Non-Inversion\n";
-					output += (*filePaths).front() + ": " + line + "\n";
+					output += fileName + ": " + line + "\n";
 					std::cout << output + "\n";
 					if ((*instance).extra) {
 						std::cout << "Enter Extra\n";
@@ -157,7 +157,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 							std::cout << "Trying Extra\n";
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
-								output += (*filePaths).front() + ": " + line + "\n";
+								output += line + "\n";
 								if (std::regex_search(line.begin(), line.end(), rgx)) {
 									j = 0;
 								}

@@ -152,7 +152,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
 								output += (*filePaths).front() + ": " + line + "\n";
-								if (std::regex_search(line2.begin(), line2.end(), rgx)) {
+								if (std::regex_search(line.begin(), line.end(), rgx)) {
 									j = 0;
 								}
 							}
@@ -171,7 +171,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
 								output += line + "\n";
-								if (std::regex_search(line2.begin(), line2.end(), rgx)) {
+								if (std::regex_search(line.begin(), line.end(), rgx)) {
 									j = 0;
 								}
 							}

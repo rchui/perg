@@ -233,7 +233,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 							try {
 								for (int j = 0; j < (*instance).numExtra; ++j) {
 									std::getline(file2, line2);
-									output += << line2 + "\n";
+									output += line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";

@@ -203,10 +203,12 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 
 			for (int j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);
-				std::cout << line2 << std::endl;
 			}
 
 			for (int j = start; j < std::min(count, start + blockSize); ++j) {
+				if (j == start) {
+					std::cout << line2 << std::endl;
+				}
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
 						std::cout << (*filePaths).front() + ": " + line2 + "\n";
@@ -239,7 +241,8 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 							}
 						}
 					}
-				}	
+				}
+				std::getline(file2, line2);
 			}
 		}
 		(*filePaths).pop();

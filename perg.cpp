@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <string.h>
 #include <sstream>
+#include <algorithm>
 #include <omp.h>
 
 // Holds the user-given settings that modify perg behavior.
@@ -200,11 +201,11 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			std::string line2;
 			int start = i * blockSize;
 
-			for (int j = 0; j < min(count, start); ++j) {
+			for (int j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);
 			}
 
-			for (j = start; j < min(count, start + blockSize); ++j) {
+			for (int j = start; j < std::min(count, start + blockSize); ++j) {
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
 						std::cout << (*filePaths).front() + ": " + line2 + "\n";

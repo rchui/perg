@@ -112,7 +112,6 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).term = settings.front();
 		}
 		settings.pop();
-		std::cout << "Check Next" << std::endl;
 	}
 
 	// Check that the search term has been given.
@@ -143,6 +142,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 
 		// Check each line and print results.
 		while (std::getline(file, line)) {
+			std::cout << "Next Line\n";
 			output = "";
 			if ((*instance).verbose) {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {

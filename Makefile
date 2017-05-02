@@ -6,5 +6,5 @@ clean:
 gcc:
 	g++ -std=c++11 -O3 -o perg -fopenmp perg.cpp
 
-intel: clean
+icc: clean
 	icc -std=c++11 -openmp -O3 -o perg perg.cpp

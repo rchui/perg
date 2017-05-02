@@ -142,15 +142,18 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 
 		// Check each line and print results.
 		while (std::getline(file, line)) {
-			std::cout << "Next Line\n";
 			output = "";
 			if ((*instance).verbose) {
+				std::cout << "Enter Verbose\n";
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
 					output += (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
+					std::cout << "Enter Non-Inversion\n";
 					output += (*filePaths).front() + ": " + line + "\n";
 					if ((*instance).extra) {
+						std::cout << "Enter Extra\n";
 						try {
+							std::cout << "Trying Extra\n";
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
 								output += (*filePaths).front() + ": " + line + "\n";

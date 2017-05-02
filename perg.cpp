@@ -213,8 +213,8 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 						if ((*instance).extra) {
 							try {
 								for (int j = 0; j < (*instance).numExtra; ++j) {
-									std::getline(file, line);
-									std::cout << (*filePaths).front() + ": " + line + "\n";
+									std::getline(file2, line2);
+									std::cout << (*filePaths).front() + ": " + line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
@@ -229,8 +229,8 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 						if ((*instance).extra) {
 							try {
 								for (int j = 0; j < (*instance).numExtra; ++j) {
-									std::getline(file, line);
-									std::cout << line + "\n";
+									std::getline(file2, line2);
+									std::cout << line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";

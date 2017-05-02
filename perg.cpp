@@ -112,6 +112,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).term = settings.front();
 		}
 		settings.pop();
+		std::cout << "Check Next" << std::endl;
 	}
 
 	// Check that the search term has been given.

@@ -240,7 +240,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 						}
 					}
 				}
-				std::cout << output;
+				printf("%s", output.c_str());
 				std::getline(file2, line2);
 			}
 		}

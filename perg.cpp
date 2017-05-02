@@ -207,7 +207,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 				std::getline(file2, line2);
 			}
 
-			for (int j = start; j < std::min(count, start + blockSize); ++j) {
+			for (int j = start; j < std::min(count, start + blockSize - 1); ++j) {
 				output = "";
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {

@@ -181,6 +181,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 // Parameters: filePaths (std::queue<std::string> *) filepaths of files to search.
 //             instance (Settings *) user argument container.
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
+	std::cout << "Single Entry" << std::endl;
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
 		std::string line1;

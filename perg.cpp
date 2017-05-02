@@ -148,16 +148,17 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					output += (*filePaths).front() + ": " + line + "\n";
 					if ((*instance).extra) {
-						std::streampos oldPos = file.tellg();
 						try {
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
 								output += (*filePaths).front() + ": " + line + "\n";
+								if (std::regex_search(line2.begin(), line2.end(), rgx)) {
+									j = 0;
+								}
 							}
 						} catch (...) {
 							std::cout << "ERROR: Could not grab line because it did not exist.\n";
 						}
-						file.seekg(oldPos);
 					}
 				}
 			} else {
@@ -166,20 +167,25 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					output += line + "\n";
 					if ((*instance).extra) {
-						std::streampos oldPos = file.tellg();
 						try {
 							for (int j = 0; j < (*instance).numExtra; ++j) {
 								std::getline(file, line);
 								output += line + "\n";
+								if (std::regex_search(line2.begin(), line2.end(), rgx)) {
+									j = 0;
+								}
 							}
 						} catch (...) {
 							std::cout << "ERROR: Could not grab line because it did not exist.\n";
 						}
-						file.seekg(oldPos);
 					}
 				}
 			}
-			std::cout << output;
+			if ((*instance).extra) {
+				std::cout << output + "--\n";
+			} else {
+				std::cout << output;	
+			}
 		}
 	}
 }
@@ -221,16 +227,18 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
 						output += (*filePaths).front() + ": " + line2 + "\n";
 						if ((*instance).extra) {
-							std::streampos oldPos = file2.tellg();
 							try {
 								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
 									output += line2 + "\n";
+									++j;
+									if (std::regex_search(line2.begin(), line2.end(), rgx)) {
+										k = 0;
+									}
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
 							}
-							file2.seekg(oldPos);
 						}
 					}
 				} else {
@@ -239,20 +247,26 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
 						output += line2 + "\n";
 						if ((*instance).extra) {
-							std::streampos oldPos = file2.tellg();
 							try {
 								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
 									output += line2 + "\n";
+									++j;
+									if (std::regex_search(line2.begin(), line2.end(), rgx)) {
+										k = 0;
+									}
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
 							}
-							file2.seekg(oldPos);
 						}
 					}
 				}
-				std::cout << output;
+				if ((*instance).extra) {
+					std::cout << output + "--\n";
+				} else {
+					std::cout << output;	
+				}
 				std::getline(file2, line2);
 			}
 		}

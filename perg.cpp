@@ -101,13 +101,13 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 				std::cout << "ERROR: The number of after context lines was not given. \"perg -h\" for help." << std::endl;
 				exit(0);
 			}
-			(*instance).numExtra = settings.front();
+			(*instance).numExtra = std::stoi(settings.front());
 		} else {
 			if (settings.size() > 1) {
 				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;
 				exit(0);
 			}
-			(*instance).term = std::stoi(settings.front());
+			(*instance).term = settings.front();
 		}
 		settings.pop();
 	}

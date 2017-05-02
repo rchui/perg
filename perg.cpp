@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <string.h>
 #include <sstream>
+#include <algorithm>
 #include <omp.h>
 
 // Holds the user-given settings that modify perg behavior.
@@ -42,8 +43,10 @@ void helpCheck(char *argv[]) {
 		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files, datasets, and\n";
 		std::cout << "    directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
 		std::cout << "    Usage:\n";
-		std::cout << "    perg [-f <file>|-r|-v|-V|-w] <search term>\n" << std::endl;
+		std::cout << "    perg [-A <#>|-f <file>|-r|-v|-V|-w] <search term>\n" << std::endl;
 		std::cout << "    Modes:\n";
+		std::cout << "    -A    After Context         perg will grab a number of lines after the line containing the\n";
+		std::cout << "                                <search term>. This does not work with search inversion.\n" << std::endl;
 		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
 		std::cout << "    -i    Include Hidden        Will include hidden files in the search. Default search behavior is to\n";
@@ -81,6 +84,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		} else if (arg == "-f") {
 			(*instance).isFile = true;
 			settings.pop();
+			arg = settings.front();
 			if (arg.compare(0, 1, "-") == 0) {
 				std::cout << "ERROR: The path to the file was not given. \"perg -h\" for help." << std::endl;
 				exit(0);
@@ -90,6 +94,15 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).fileWise = true;
 		} else if (arg == "-i") {
 			(*instance).checkHidden = true;
+		} else if (arg == "-A") {
+			(*instance).extra = true;
+			settings.pop();
+			arg = settings.front();
+			if (arg.compare(0, 1, "-") == 0) {
+				std::cout << "ERROR: The number of after context lines was not given. \"perg -h\" for help." << std::endl;
+				exit(0);
+			}
+			(*instance).numExtra = std::stoi(settings.front());
 		} else {
 			if (settings.size() > 1) {
 				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;
@@ -115,6 +128,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	#pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
+		std::string output;
 
 		#pragma omp critical
 		{
@@ -127,19 +141,45 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 
 		// Check each line and print results.
 		while (std::getline(file, line)) {
+			output = "";
 			if ((*instance).verbose) {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line + "\n";
+					output += (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line + "\n";
+					output += (*filePaths).front() + ": " + line + "\n";
+					if ((*instance).extra) {
+						std::streampos oldPos = file.tellg();
+						try {
+							for (int j = 0; j < (*instance).numExtra; ++j) {
+								std::getline(file, line);
+								output += (*filePaths).front() + ": " + line + "\n";
+							}
+						} catch (...) {
+							std::cout << "ERROR: Could not grab line because it did not exist.\n";
+						}
+						file.seekg(oldPos);
+					}
 				}
 			} else {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
-					std::cout << line + "\n";
+					output += line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
-					std::cout << line + "\n";
+					output += line + "\n";
+					if ((*instance).extra) {
+						std::streampos oldPos = file.tellg();
+						try {
+							for (int j = 0; j < (*instance).numExtra; ++j) {
+								std::getline(file, line);
+								output += line + "\n";
+							}
+						} catch (...) {
+							std::cout << "ERROR: Could not grab line because it did not exist.\n";
+						}
+						file.seekg(oldPos);
+					}
 				}
 			}
+			std::cout << output;
 		}
 	}
 }
@@ -150,7 +190,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
-		std::ifstream file2((*filePaths).front());
 		std::string line1;
 		std::regex rgx((*instance).term);
 		int count = 0;
@@ -158,25 +197,63 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		for (int i = 0; std::getline(file1, line1); ++i) {
 			count++;
 		}
+		
+		int numThreads = omp_get_max_threads();
+		int blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
 		#pragma omp parallel for schedule(static)
-		for (int i = 0; i < count; ++i) {
+		for (int i = 0; i < numThreads; ++i) {
+			std::ifstream file2((*filePaths).front());
 			std::string line2;
-			#pragma omp critical
-			std::getline(file2, line2);
-			if ((*instance).verbose) {
-				if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line2 + "\n";
-				} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
-					std::cout << (*filePaths).front() + ": " + line2 + "\n";
+			std::string output;
+			int start = i * blockSize;
+
+			for (int j = 0; j < std::min(count, start); ++j) {
+				std::getline(file2, line2);
+			}
+
+			for (int j = start; j < std::min(count, start + blockSize); ++j) {
+				output = "";
+				if ((*instance).verbose) {
+					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
+						output += (*filePaths).front() + ": " + line2 + "\n";
+					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
+						output += (*filePaths).front() + ": " + line2 + "\n";
+						if ((*instance).extra) {
+							std::streampos oldPos = file2.tellg();
+							try {
+								for (int k = 0; k < (*instance).numExtra; ++k) {
+									std::getline(file2, line2);
+									output += line2 + "\n";
+								}
+							} catch (...) {
+								std::cout << "ERROR: Could not grab line because it did not exist.\n";
+							}
+							file2.seekg(oldPos);
+						}
+					}
+				} else {
+					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
+						output += line2 + "\n";
+					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
+						output += line2 + "\n";
+						if ((*instance).extra) {
+							std::streampos oldPos = file2.tellg();
+							try {
+								for (int k = 0; k < (*instance).numExtra; ++k) {
+									std::getline(file2, line2);
+									output += line2 + "\n";
+								}
+							} catch (...) {
+								std::cout << "ERROR: Could not grab line because it did not exist.\n";
+							}
+							file2.seekg(oldPos);
+						}
+					}
 				}
-			} else {
-				if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
-					std::cout << line2 + "\n";
-				} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
-					std::cout << line2 + "\n";
-				}
+				std::cout << output;
+				std::getline(file2, line2);
 			}
 		}
 		(*filePaths).pop();

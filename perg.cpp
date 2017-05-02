@@ -181,7 +181,6 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 // Parameters: filePaths (std::queue<std::string> *) filepaths of files to search.
 //             instance (Settings *) user argument container.
 void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
-	std::cout << "Single Entry" << std::endl;
 	while (!(*filePaths).empty()) {
 		std::ifstream file1((*filePaths).front());
 		std::string line1;
@@ -194,6 +193,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		
 		int numThreads = omp_get_max_threads();
 		int blockSize = count / numThreads + 1;
+		std::cout << blockSize << std::endl;
 
 		// Check each line and print results.
 		#pragma omp parallel for schedule(static)

@@ -126,7 +126,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 //             instance (Settings *) user argument container.
 void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	std::regex rgx((*instance).term);
-	#pragma omp parallel for schedule(dynamic)
+	// #pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
 		std::string fileName;
 		std::string output;

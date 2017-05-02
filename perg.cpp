@@ -42,7 +42,7 @@ void helpCheck(char *argv[]) {
 		std::cout << "    perg is a custom multithreaded c++ implementation of grep to search multi gigabyte files, datasets, and\n";
 		std::cout << "    directories developed at the National Center for Supercomputing Applications.\n" << std::endl;
 		std::cout << "    Usage:\n";
-		std::cout << "    perg [-f <file>|-r|-v|-V|-w] <search term>\n" << std::endl;
+		std::cout << "    perg [-A <#>|-f <file>|-r|-v|-V|-w] <search term>\n" << std::endl;
 		std::cout << "    Modes:\n";
 		std::cout << "    -A    After Context         perg will grab a number of lines after the line containing the\n";
 		std::cout << "                                <search term>." << std::endl;
@@ -92,6 +92,14 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 			(*instance).fileWise = true;
 		} else if (arg == "-i") {
 			(*instance).checkHidden = true;
+		} else if (arg == "-A") {
+			(*instance).extra = true;
+			settings.pop();
+			if (arg.compare(0, 1, "-") == 0) {
+				std::cout << "ERROR: The number of after context lines was not given. \"perg -h\" for help." << std::endl;
+				exit(0);
+			}
+			(*instance).file = settings.front();
 		} else {
 			if (settings.size() > 1) {
 				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;

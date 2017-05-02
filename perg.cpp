@@ -202,6 +202,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			std::string output;
 			int start = i * blockSize;
 			std::cout << start << std::endl;
+			std::cout << start + blockSize << std::endl;
 
 			for (int j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);
@@ -216,8 +217,9 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 						output += (*filePaths).front() + ": " + line2 + "\n";
 						if ((*instance).extra) {
 							try {
-								for (int j = 0; j < (*instance).numExtra; ++j) {
+								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
+									++j;
 									output += (*filePaths).front() + ": " + line2 + "\n";
 								}
 							} catch (...) {
@@ -232,8 +234,9 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 						output += line2 + "\n";
 						if ((*instance).extra) {
 							try {
-								for (int j = 0; j < (*instance).numExtra; ++j) {
+								for (int k = 0; k < (*instance).numExtra; ++k) {
 									std::getline(file2, line2);
+									++j;
 									output += line2 + "\n";
 								}
 							} catch (...) {

@@ -191,6 +191,8 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			count++;
 		}
 
+		std::cout << omp_get_num_threads() << std::endl;
+
 		// Check each line and print results.
 		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < count; ++i) {

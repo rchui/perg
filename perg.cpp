@@ -200,6 +200,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
 			int start = i * blockSize;
+			std::cout << start  + "\n";
 
 			for (int j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);

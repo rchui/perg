@@ -195,7 +195,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		int blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
-		#pragma omp parallel for schedule(static)
+		// #pragma omp parallel for schedule(static)
 		for (int i = 0; i < numThreads; ++i) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
@@ -207,16 +207,17 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			}
 
 			for (int j = start; j < std::min(count, start + blockSize); ++j) {
+				output = "";
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
-						output = (*filePaths).front() + ": " + line2 + "\n";
+						output += (*filePaths).front() + ": " + line2 + "\n";
 					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
-						output = (*filePaths).front() + ": " + line2 + "\n";
+						output += (*filePaths).front() + ": " + line2 + "\n";
 						if ((*instance).extra) {
 							try {
 								for (int j = 0; j < (*instance).numExtra; ++j) {
 									std::getline(file2, line2);
-									output = (*filePaths).front() + ": " + line2 + "\n";
+									output += (*filePaths).front() + ": " + line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
@@ -225,14 +226,14 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 					}
 				} else {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
-						output = line2 + "\n";
+						output += line2 + "\n";
 					} else if (std::regex_search(line2.begin(), line2.end(), rgx) && !(*instance).invert) {
-						output =  line2 + "\n";
+						output += line2 + "\n";
 						if ((*instance).extra) {
 							try {
 								for (int j = 0; j < (*instance).numExtra; ++j) {
 									std::getline(file2, line2);
-									output = line2 + "\n";
+									output += << line2 + "\n";
 								}
 							} catch (...) {
 								std::cout << "ERROR: Could not grab line because it did not exist.\n";
@@ -240,7 +241,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 						}
 					}
 				}
-				printf("%s", output.c_str());
+				std::cout << output;
 				std::getline(file2, line2);
 			}
 		}

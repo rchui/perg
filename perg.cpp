@@ -107,7 +107,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;
 				exit(0);
 			}
-			(*instance).term = settings.front();
+			(*instance).term = std::stoi(settings.front());
 		}
 		settings.pop();
 	}

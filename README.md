@@ -25,6 +25,9 @@ Compiler must have C++11 support.
 
 ### Modes:
 
+    -A    After Context         perg will grab a number of lines after the line containing the
+                                <search term>. This does not work with search inversion.
+                                
     -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not
                                 used, perg will search the entire directory from where perg is called from.
 

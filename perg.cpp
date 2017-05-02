@@ -195,7 +195,7 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		int blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
-		// #pragma omp parallel for schedule(static)
+		#pragma omp parallel for schedule(static)
 		for (int i = 0; i < numThreads; ++i) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
@@ -206,9 +206,6 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			}
 
 			for (int j = start; j < std::min(count, start + blockSize); ++j) {
-				if (j == start) {
-					std::cout << "Starting line... " + line2 << std::endl;
-				}
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {
 						std::cout << (*filePaths).front() + ": " + line2 + "\n";

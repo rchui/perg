@@ -150,6 +150,7 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					std::cout << "Enter Non-Inversion\n";
 					output += (*filePaths).front() + ": " + line + "\n";
+					std::cout << output + "\n";
 					if ((*instance).extra) {
 						std::cout << "Enter Extra\n";
 						try {

@@ -142,12 +142,32 @@ void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 					std::cout << (*filePaths).front() + ": " + line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					std::cout << (*filePaths).front() + ": " + line + "\n";
+					if ((*instance).extra) {
+						try {
+							for (int j = 0; j < (*instance).numExtra; ++j) {
+								std::getline(file, line);
+								std::cout << (*filePaths).front() + ": " + line + "\n";
+							}
+						} catch (...) {
+							std::cout << "ERROR: Could not grab line because it did not exist.\n"
+						}
+					}
 				}
 			} else {
 				if (!std::regex_search(line.begin(), line.end(), rgx) && (*instance).invert) {
 					std::cout << line + "\n";
 				} else if (std::regex_search(line.begin(), line.end(), rgx) && !(*instance).invert) {
 					std::cout << line + "\n";
+					if ((*instance).extra) {
+						try {
+							for (int j = 0; j < (*instance).numExtra; ++j) {
+								std::getline(file, line);
+								std::cout << line + "\n";
+							}
+						} catch (...) {
+							std::cout << "ERROR: Could not grab line because it did not exist.\n"
+						}
+					}
 				}
 			}
 		}

@@ -44,6 +44,8 @@ void helpCheck(char *argv[]) {
 		std::cout << "    Usage:\n";
 		std::cout << "    perg [-f <file>|-r|-v|-V|-w] <search term>\n" << std::endl;
 		std::cout << "    Modes:\n";
+		std::cout << "    -A    After Context         perg will grab a number of lines after the line containing the\n";
+		std::cout << "                                <search term>." << std::endl;
 		std::cout << "    -f    Single File Search    Signals perg to only search the <file> for the <search term>. If -f is not\n";
 		std::cout << "                                used, perg will search the entire directory from where perg is called from.\n" << std::endl;
 		std::cout << "    -i    Include Hidden        Will include hidden files in the search. Default search behavior is to\n";

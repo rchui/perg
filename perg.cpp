@@ -83,6 +83,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		} else if (arg == "-f") {
 			(*instance).isFile = true;
 			settings.pop();
+			arg = settings.front();
 			if (arg.compare(0, 1, "-") == 0) {
 				std::cout << "ERROR: The path to the file was not given. \"perg -h\" for help." << std::endl;
 				exit(0);
@@ -95,11 +96,12 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 		} else if (arg == "-A") {
 			(*instance).extra = true;
 			settings.pop();
+			arg = settings.front();
 			if (arg.compare(0, 1, "-") == 0) {
 				std::cout << "ERROR: The number of after context lines was not given. \"perg -h\" for help." << std::endl;
 				exit(0);
 			}
-			(*instance).file = settings.front();
+			(*instance).numExtra = settings.front();
 		} else {
 			if (settings.size() > 1) {
 				std::cout << "ERROR: perg was called incorrectly. \"perg -h\" for command syntax." << std::endl;

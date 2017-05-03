@@ -8,13 +8,13 @@ Compiler must have C++11 support.
 
 ## Installation
 ### GNU C Compiler
-    g++ -std=c++11 -fopenmp -O3 -o perg perg.cpp
+    g++ -std=c++11 -fopenmp -O3 -o bin/perg src/perg.cpp
 
 ### Makefile
     make
     
 ### Intel C Compiler
-    icc -std=c++11 -openmp -O3 -o perg perg.cpp
+    icc -std=c++11 -openmp -O3 -o bin/perg src/perg.cpp
     
 ### Makefile
     make icc

@@ -1,7 +1,7 @@
 all: clean gcc
 
 clean:
-	rm -rf perg
+	rm -rf bin/
 
 gcc:
 	mkdir bin

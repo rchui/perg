@@ -12,12 +12,14 @@ Compiler must have C++11 support.
 
 ### Makefile
     make
+    make install
     
 ### Intel C Compiler
     icc -std=c++11 -openmp -O3 -o bin/perg src/perg.cpp
     
 ### Makefile
     make icc
+    make install
 
 ## Usage
 ### Command Syntax:

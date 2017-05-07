@@ -71,6 +71,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 	std::queue<std::string> settings;
 	for (int i = 1; i < argc; i++) {
 		settings.push(argv[i]);
+		std::cout << argv[i] << std::endl;
 	}
 	
 	// Sets settings based off of arguments received.

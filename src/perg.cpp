@@ -127,7 +127,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 void printMultiple(std::queue<std::string> *filePaths, Settings *instance) {
 	std::regex rgx((*instance).term);
 	#pragma omp parallel for schedule(dynamic)
-	for (int i = 0; i < (int) (*filePaths).size(); ++i) {
+	for (unsigned long long i = 0; i < (unsigned long long) (*filePaths).size(); ++i) {
 		std::string fileName;
 		std::string output;
 
@@ -202,14 +202,14 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 		std::ifstream file1((*filePaths).front());
 		std::string line1;
 		std::regex rgx((*instance).term);
-		int count = 0;
+		unsigned long long count = 0;
 
-		for (int i = 0; std::getline(file1, line1); ++i) {
+		for (unsigned long long i = 0; std::getline(file1, line1); ++i) {
 			count++;
 		}
 		
 		int numThreads = omp_get_max_threads();
-		int blockSize = count / numThreads + 1;
+		unsigned long long blockSize = count / numThreads + 1;
 
 		// Check each line and print results.
 		#pragma omp parallel for schedule(static)
@@ -217,13 +217,13 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 			std::ifstream file2((*filePaths).front());
 			std::string line2;
 			std::string output;
-			int start = i * blockSize;
+			unsigned long long start = i * blockSize;
 
-			for (int j = 0; j < std::min(count, start); ++j) {
+			for (unsigned long long j = 0; j < std::min(count, start); ++j) {
 				std::getline(file2, line2);
 			}
 
-			for (int j = start; j < std::min(count, start + blockSize); ++j) {
+			for (unsigned long long j = start; j < std::min(count, start + blockSize); ++j) {
 				output = "";
 				if ((*instance).verbose) {
 					if (!std::regex_search(line2.begin(), line2.end(), rgx) && (*instance).invert) {

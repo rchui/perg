@@ -351,28 +351,20 @@ int main(int argc, char *argv[]) {
 	std::queue<std::string> *filePaths = new std::queue<std::string>;
 
 	helpCheck(argv);
-	std::cout << "helpCheck" << std::endl;
 	getSettings(argc, argv, instance);
-	std::cout << "getSettings" << std::endl;
 	getcwd(cwd, PATH_MAX);
-	std::cout << "getcwd" << std::endl;
 
 	if ((*instance).isFile) {
 		(*filePaths).push(std::string(cwd) + "/" + (*instance).file);
 		printSingle(filePaths, instance);
-		std::cout << "printSingle" << std::endl;
 	} else {
 		findAll(filePaths, cwd, instance);
-		std::cout << "findAll" << std::endl;
 		if ((*instance).fileWise) {
 			printMultiple(filePaths, instance);
-			std::cout << "printMultiple" << std::endl;
 		} else {
 			printSingle(filePaths, instance);
-			std::cout << "printSingle" << std::endl;
 		}
 	}
-	std::cout << "Exiting" << std::endl;
 
 	delete(filePaths);
 	delete(instance);

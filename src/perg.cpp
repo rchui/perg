@@ -90,6 +90,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 				arg = settings.front();
 			} else {
 				std::cout << "ERROR: The path to the file was not given. \"perg -h\" for help." << std::endl;
+				exit(0);
 			}
 			if (arg.compare(0, 1, "-") == 0) {
 				std::cout << "ERROR: The path to the file was not given. \"perg -h\" for help." << std::endl;
@@ -107,6 +108,7 @@ void getSettings(int argc, char *argv[], Settings *instance) {
 				arg = settings.front();
 			} else {
 				std::cout << "ERROR: The number of after context lines was not given. \"perg -h\" for help." << std::endl;
+				exit(0);
 			}
 			if (arg.compare(0, 1, "-") == 0) {
 				std::cout << "ERROR: The number of after context lines was not given. \"perg -h\" for help." << std::endl;

@@ -267,7 +267,9 @@ void printSingle(std::queue<std::string> *filePaths, Settings *instance) {
 					}
 				}
 				if ((*instance).extra) {
-					std::cout << output + "--\n";
+					if (output != "") {
+						std::cout << output + "--\n";
+					}
 				} else {
 					std::cout << output;	
 				}
